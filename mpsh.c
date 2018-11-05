@@ -70,7 +70,11 @@ void proc(){
 
 			//à compléter
 
-			continue;
+			continue; //test
+		}
+		else if (strcmp(command[0], "exit") == 0){
+			
+			exit(0);
 		}
 
 		child_pid = fork();

@@ -1,8 +1,14 @@
 Use "Make" to compli the application : mpsh.c
 
-And I realize these fonction:
+Realize these fonction:
 
 1) cd
 
 2) ls -l -a -h
+
+3) echo
+
+4) cat
+
+5) exit
 
