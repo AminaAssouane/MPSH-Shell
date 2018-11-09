@@ -13,7 +13,7 @@
 
 char **read_input(char *input){
 	
-	char **cmd = malloc(8*sizeof(char *)); //pour l'instant, 8 character est maximum
+	char **cmd = malloc(SHELL_BUFFER*sizeof(char *)); //pour l'instant, 8 character est maximum
 	if(cmd == NULL){
 		perror("get_input : malloc failed \n");
 		exit(1);
@@ -34,9 +34,29 @@ char **read_input(char *input){
 	return cmd;
 }
 
+void make_prompt(){
+	char pathname[SHELL_BUFFER];
+	char username[SHELL_BUFFER];
+	char hostname[SHELL_BUFFER];
+
+	struct passwd * pwd = getpwuid(getuid());
+	strcpy(username, pwd->pw_name);
+	gethostname(hostname,SHELL_BUFFER);
+
+
+	memset(pathname, 0, sizeof(pathname));
+	getcwd(pathname, sizeof(pathname));		//obtenir l'adresse actuel
+	printf("[%s-%s-%s]",username,hostname,pathname);
+	fflush(stdout);					//renouvoler espace
+
+
+}
+
 int cd(char *path){
 	return chdir(path);
 }
+
+
 
 void proc(){
 	
@@ -45,20 +65,15 @@ void proc(){
 	pid_t child_pid;
 	int stat_loc;
 	
-	char pathname[SHELL_BUFFER];
+	//char pathname[SHELL_BUFFER];
 
 	while(TRUE){
 
-		memset(pathname, 0, sizeof(pathname));
-		getcwd(pathname, sizeof(pathname));		//obtenir l'adresse actuel
-		printf("[%s]",pathname);
-		fflush(stdout);					//renouvoler espace
-
-		//input = readline("mpsh>> ");
-		command = read_input(readline("~$ "));
+		//char* input = readline("~$ ");
+		make_prompt();
+		command = read_input(readline("~s "));
 
 		if(!command[0]){				//get_input ne marche pas, alors on arête
-			//free(input);
 			free(command);
 			continue;
 		}
@@ -75,6 +90,10 @@ void proc(){
 		else if (strcmp(command[0], "exit") == 0){
 			
 			exit(0);
+		}else if(strcmp(command[0], "mpsh") == 0){
+			printf("commands: \n");
+			printf("ls : xxxx\n");
+			continue;
 		}
 
 		child_pid = fork();
@@ -96,7 +115,6 @@ void proc(){
 
 		free(command);
 	}
-
 }
 
 int main(){

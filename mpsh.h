@@ -7,11 +7,17 @@
  *---------------------------------------------------------
  */
 
+#ifndef MPSH_H
+#define MPSH_H
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/wait.h>
 #include <readline/readline.h>
 #include <stdio.h>
+#include <pwd.h>
+#include <sys/signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-
+#endif  //fin de fichier "mpsh.h"

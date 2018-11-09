@@ -1,9 +1,9 @@
 
 CC = gcc
 
-CFLAGS =-Wall -g -lreadline
+CFLAGS = -std=c11 -Wall -g
 
-LDLIBS= -lm
+LDLIBS= -lm -lreadline
 
 ALL = mpsh
 
