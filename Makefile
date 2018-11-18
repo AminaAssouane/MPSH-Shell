@@ -9,7 +9,9 @@ ALL = mpsh
 
 all : $(ALL)
 
-mpsh: mpsh.c
+mpsh: fonc_ls.h mpsh.h
+
+fonc_ls.o: fonc_ls.c fonc_ls.h
 
 cleanall:
 	rm -rf *~ $(ALL)

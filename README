@@ -16,3 +16,5 @@ Realize these fonction:
 
 7) mkdir
 
+
+gcc -o mpsh mpsh.c fonc_ls.c -lreadline 

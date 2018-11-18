@@ -8,8 +8,10 @@
  */
 
 #include "mpsh.h"
+#include "new_ls2.h"
 #define TRUE 1
 #define SHELL_BUFFER  64
+int main_ls(int argc, char** argv);
 
 char **read_input(char *input){
 	
@@ -43,12 +45,10 @@ void make_prompt(){
 	strcpy(username, pwd->pw_name);
 	gethostname(hostname,SHELL_BUFFER);
 
-
 	memset(pathname, 0, sizeof(pathname));
 	getcwd(pathname, sizeof(pathname));		//obtenir l'adresse actuel
 	printf("[%s-%s-%s]",username,hostname,pathname);
 	fflush(stdout);					//renouvoler espace
-
 
 }
 
@@ -56,22 +56,18 @@ int cd(char *path){
 	return chdir(path);
 }
 
-
-
-void proc(){
-	
+void proc(){	
 	char **command;
-	//char *input;
 	pid_t child_pid;
 	int stat_loc;
 	
-	//char pathname[SHELL_BUFFER];
-
 	while(TRUE){
 
 		//char* input = readline("~$ ");
 		make_prompt();
 		command = read_input(readline("~s "));
+		int lg;
+		lg = strlen(*command);
 
 		if(!command[0]){				//get_input ne marche pas, alors on arête
 			free(command);
@@ -104,6 +100,17 @@ void proc(){
 		}
 
 		if(child_pid == 0){
+			printf("command : %s\n", command[1]);
+			if(strcmp(command[0], "ls") == 0){	
+				main_ls(lg, *command);
+				/*	
+				if(strcmp(command[1], "-l") == 0){
+					printf("wait\n");
+				}
+				*/
+				exit(1);
+			}
+
 			if(execvp(command[0], command)<0) {
 				perror(command[0]);
 				exit(1);
@@ -112,7 +119,6 @@ void proc(){
 		}else{
 			waitpid(child_pid, &stat_loc, WUNTRACED);
 		}
-
 		free(command);
 	}
 }
