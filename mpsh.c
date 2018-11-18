@@ -90,14 +90,15 @@ void proc(){
 			//à compléter
 
 			continue; //test
-		}
-		else if (strcmp(command[0], "exit") == 0){
+		}else if (strcmp(command[0], "exit") == 0){
 			
 			exit(0);
 		}else if(strcmp(command[0], "mpsh") == 0){
 			printf("commands: \n");
 			printf("ls : xxxx\n");
 			continue;
+		}else if(strcmp(command[0], "pwd") == 0){
+			printf("%s\n", pwd());
 		}
 
 		child_pid = fork();
@@ -106,17 +107,19 @@ void proc(){
 			perror("Fork failed");
 			exit(1);
 		}
-
+		
 		if(child_pid == 0){
+			/*	
 			if(execvp(command[0], command)<0) {
 				perror(command[0]);
 				exit(1);
-			}
+			}*/
+			exit(1);
 			printf("main : execvp failed \n");
 		}else{
 			waitpid(child_pid, &stat_loc, WUNTRACED);
 		}
-
+		
 		free(command);
 	}
 }
