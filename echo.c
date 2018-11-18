@@ -6,10 +6,6 @@ int echo (char * s ){
 }
 
 int main(int argv, char * argc[]){
-	int i=1;
-	for (i;i<argv;i++){
-		echo(argc[i]);
-	}
-	printf("\n");
-
+    echo(*argc);
+    return 1;
 }
