@@ -5,7 +5,11 @@ int echo (char * s ){
 	return 1;
 }
 
+
 int main(int argv, char * argc[]){
-    echo(*argc);
-    return 1;
+	int i;
+	for (i = 1;i<argv;i++){
+		echo(argc[i]);
+	}
+	printf("\n");
 }
