@@ -12,4 +12,5 @@ int main(int argv, char * argc[]){
 		echo(argc[i]);
 	}
 	printf("\n");
+    	return 1;
 }
