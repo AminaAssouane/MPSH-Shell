@@ -120,14 +120,11 @@ void do_ls(char dirname[],int mode)
     DIR* dir_ptr;
     struct dirent* direntp;
 
-    if ((dir_ptr = opendir(dirname)) == NULL)
-    {
+    if ((dir_ptr = opendir(dirname)) == NULL){
         fprintf(stderr, "ls2: cannot open %s \n", dirname);
     }
-    else
-    {
-        if(mode==LS_D)
-        {
+    else{
+        if(mode==LS_D){
             printf("%s   ", dirname);
         }
         else
@@ -135,11 +132,9 @@ void do_ls(char dirname[],int mode)
             char dirs[20][100];
             int dir_count = 0;
             
-            while ((direntp = readdir(dir_ptr)) != NULL)
-            {
+            while ((direntp = readdir(dir_ptr)) != NULL){
 
-                if(mode < 200 && direntp->d_name[0]=='.')
-                {
+                if(mode < 200 && direntp->d_name[0]=='.'){
                     continue;
                 }
 
@@ -177,6 +172,7 @@ void do_ls(char dirname[],int mode)
                     }
                 }
             }
+	    printf("\n");
 
             if(mode == LS_R)
             {
@@ -227,15 +223,12 @@ int fonctionls_main(int ac,char* av[]){
             av++;
 
             int calMode = analyzeParam(*av);
-            if(calMode!=-1)
-            {
+            if(calMode!=-1){
                 mode+=calMode;
             }
-            else
-            {
+            else{
                 have_file_param = 1;
-                do
-                {
+                do{
                     printf("%s:\n", *av);
                     do_ls(*av,mode);
                     printf("\n");
@@ -246,8 +239,7 @@ int fonctionls_main(int ac,char* av[]){
             }
         }
 
-        if (!have_file_param)
-        {
+        if (!have_file_param){
             do_ls(".",mode);
         }
         
