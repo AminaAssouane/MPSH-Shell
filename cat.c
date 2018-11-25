@@ -1,9 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include "cat.h"
  
 void cat(char *path){
   struct stat statbuf;
@@ -33,7 +28,7 @@ void cat(char *path){
     exit(-1);
   }
 }
-
+/*
 int main(int argc, char* argv[]){
   if (argc < 2){
     printf("Erreur.");
@@ -50,3 +45,4 @@ int main(int argc, char* argv[]){
     }
   }
 }
+*/

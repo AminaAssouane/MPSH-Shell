@@ -25,8 +25,6 @@ void display_attribute(struct stat st, char * name){
 		printf("b");
 	}else if(S_ISFIFO(st.st_mode)){
 		printf("f");
-	}else if(S_ISSOCK(st.st_mode)){
-		printf("s");
 	}
 
 	//print the right of owner

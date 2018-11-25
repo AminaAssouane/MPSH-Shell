@@ -10,6 +10,7 @@
 #ifndef MPSH_H
 #define MPSH_H
 
+#include "cat.h"
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,6 +20,7 @@
 #include <sys/signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 
 //int main_ls(int argc, char** argv);
 

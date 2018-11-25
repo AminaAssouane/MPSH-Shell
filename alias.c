@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "cat.h"
 
 
 /* fonction qui verifie si l'argument apres la commande alias est bien formaté */
@@ -24,7 +25,7 @@ short isAlias(char *comm){
   }
 }
 
-void alias(char* comm){
+void alias(int nbarg,char* comm){
   if (comm == NULL){
     int fd2 = open("mpsh_aliases.txt", O_RDONLY | O_CREAT);
     close(fd2);
@@ -47,12 +48,12 @@ void alias(char* comm){
 
 int main(int argc, char * argv[]){
   if (argc < 2){
-    alias(NULL);
+    alias(argc,NULL);
     return 1;
   }
   else {
     if (argc == 2){
-      alias(argv[1]);
+      alias(argc,argv[1]);
       return 1;
     }
     else {

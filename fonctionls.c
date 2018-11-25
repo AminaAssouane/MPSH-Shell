@@ -147,7 +147,7 @@ void do_ls(char dirname[],int mode)
     {
         if(mode==LS_D)
         {
-            printf("%s\n", dirname);
+            printf("%s   ", dirname);
         }
         else
         {
@@ -192,14 +192,14 @@ void do_ls(char dirname[],int mode)
 
                         if(S_ISDIR(info.st_mode))
                         {
-                            printf("%s\n", direntp->d_name);
+                            printf("%s   ", direntp->d_name);
 
                             strcpy (dirs[dir_count],complete_d_name);
                             dir_count++;
                         }
                         else
                         {
-                            printf("%s\n", direntp->d_name);
+                            printf("%s   ", direntp->d_name);
                         }
                     }
 
