@@ -21,7 +21,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-
+#include "fonctionls.h"
 //int main_ls(int argc, char** argv);
 
 #endif  //fin de fichier "mpsh.h"

@@ -1,23 +1,4 @@
-#include <stdio.h>
-#include <sys/types.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <pwd.h>
-#include <grp.h>
-#include <unistd.h>
-#include <string.h>
-
-#define LS_NONE 0
-#define LS_L 101
-#define LS_R 102
-#define LS_D 103
-#define LS_I 104
-
-#define LS_A 200
-
-#define LS_AL (LS_A+LS_L)
-#define LS_AI (LS_A+LS_I)
-
+#include "fonctionls.h"
 // 展示单个文件的详细信息
 void show_file_info(char* filename, struct stat* info_p)
 {
@@ -168,41 +149,32 @@ void do_ls(char dirname[],int mode)
                 strcat (complete_d_name,direntp->d_name);
                 
                 struct stat info;
-                if (stat(complete_d_name, &info) == -1)
-                {
+                if (stat(complete_d_name, &info) == -1){
                     perror(complete_d_name);
                 }
-                else
-                {
-                    if(mode == LS_L||mode == LS_AL)
-                    {
+                else{
+                    if(mode == LS_L||mode == LS_AL){
                         show_file_info(direntp->d_name, &info);
                     }
-                    else if(mode == LS_A||mode == LS_NONE||mode == LS_I||mode == LS_AI)
-                    {
-                        if(mode == LS_I||mode == LS_AI)
-                        {
+                    else if(mode == LS_A||mode == LS_NONE||mode == LS_I||mode == LS_AI){
+                        if(mode == LS_I||mode == LS_AI){
                             printf("%llu ", direntp->d_ino);
                         }
 
-                        printf("%s\n", direntp->d_name);
+                        printf("%s\t", direntp->d_name);
                     }
-                    else if(mode == LS_R)
-                    {
+                    else if(mode == LS_R){
 
-                        if(S_ISDIR(info.st_mode))
-                        {
+                        if(S_ISDIR(info.st_mode)){
                             printf("%s   ", direntp->d_name);
 
                             strcpy (dirs[dir_count],complete_d_name);
                             dir_count++;
                         }
-                        else
-                        {
+                        else{
                             printf("%s   ", direntp->d_name);
                         }
                     }
-
                 }
             }
 
@@ -241,20 +213,16 @@ int analyzeParam(char* input){
     return -1;
 }
 
-int main(int ac,char* av[])
-{
+int fonctionls_main(int ac,char* av[]){
 
-    if(ac == 1)
-    {
+    if(ac == 1){
         do_ls(".",LS_NONE);
     }
-    else
-    {
+    else{
         int mode = LS_NONE; // 默认为无参数ls
         int have_file_param = 0; // 是否有输入文件参数
 
-        while(ac>1)
-        {
+        while(ac>1){
             ac--;
             av++;
 

@@ -230,9 +230,6 @@ void proc(){
 			 //test
 		}else if (strcmp(command[0], "exit") == 0){
 			exit(0);
-		}else if(strcmp(command[0], "ls") == 0){
-			printf("commands: \n");
-			printf("ls : xxxx\n");
 		}else if(strcmp(command[0], "pwd") == 0){
 			printf("%s\n", pwd());
 		}else if(strcmp(command[0], "echo")==0){
@@ -258,6 +255,14 @@ void proc(){
 				perror(command[0]);
 				exit(1);
 			}*/
+			int lg = nbargs(command);
+			//printf("command avant : %d \n ", lg);
+			if(strcmp(command[0], "ls")==0){
+				//int lg2 = nbargs(command);
+				//printf("command avant lg2 : %d \n ", lg2);
+				int j = fonctionls_main(lg,command);				
+			}
+
 			exit(1);
 			printf("main : execvp failed \n");
 		}else{
