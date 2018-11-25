@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/stat.h>
-
+#include "mkdir.h"
 /**
  *  \function MakeDir
  *  \author PengWeizhe
@@ -64,7 +60,7 @@ int makeDir(const char* path){
     }
     return 0;
 }
-
+/*
 int main(int argc, char* argv[]){
     //makeDir("helloworld");
     if(argc >=2 ){
@@ -72,4 +68,4 @@ int main(int argc, char* argv[]){
     }
     return 0;
 }
-
+*/

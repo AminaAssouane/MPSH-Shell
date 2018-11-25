@@ -27,6 +27,7 @@ void cat(char *path){
     printf("Erreur. Le chemin que vous avez mentionne n'est pas un fichier.");
     exit(-1);
   }
+  printf("\n");
 }
 /*
 int main(int argc, char* argv[]){

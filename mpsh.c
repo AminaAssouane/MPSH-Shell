@@ -255,14 +255,13 @@ void proc(){
 				perror(command[0]);
 				exit(1);
 			}*/
-			int lg = nbargs(command);
-			//printf("command avant : %d \n ", lg);
 			if(strcmp(command[0], "ls")==0){
-				//int lg2 = nbargs(command);
-				//printf("command avant lg2 : %d \n ", lg2);
-				int j = fonctionls_main(lg,command);				
+				int j = fonctionls_main(nbarg,command);				
+			}else if(strcmp(command[0],"cat")==0){
+				cat(command[1]);
+			}else if (strcmp(command[0],"mkdir")==0){
+				makeDir(command[1]);
 			}
-
 			exit(1);
 			printf("main : execvp failed \n");
 		}else{
