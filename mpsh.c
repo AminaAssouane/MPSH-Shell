@@ -177,12 +177,17 @@ void history(int argc,char ** argv,char *h [],int nbcom){
 			}
 		}
 	}else if (argc==2){
-		printf("Test\n");
 		if((isdigit(argv[1][0]))){
-			printf("%s\n",argv[1]);
 			int tmp = atoi(argv[1]);
-			for (int i = 0;i<tmp;i++)
-				printf("%s\n",h[nbcom-i]);
+			if(tmp>nbcom){
+				printf("Trop grand nombre change en history %d\n",nbcom);
+				for(int i =0;i<nbcom;i++)
+					printf("%s\n",h[i]);
+			}else {
+				for (int i =0;i<tmp;i++)
+					printf("%s\n",h[i]);
+			}
+			
 		}else
 			printf("Mauvais argument\n");
 	}
