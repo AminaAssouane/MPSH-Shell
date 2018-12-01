@@ -5,19 +5,21 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "cat.h"
-
+#include "unalias.h"
 
 /* fonction qui verifie si l'argument apres la commande alias est bien formaté */
-short isAlias(char *comm){ 
+short isAlias(char *comm, char *unalias){ 
   int i = 0;
   int size = strlen(comm); 
   if (comm[0] == '='){
     return 0;
   }
   while((comm[i] != '=') && (i < size)){
+    unalias[i] = comm[i];
     i++;
   }
   if (comm[i] == '='){
+    unalias[i] = '\0';
     return 1;
   }
   else {
@@ -25,14 +27,16 @@ short isAlias(char *comm){
   }
 }
 
-void alias(int nbarg,char* comm){
+void alias(char* comm){
   if (comm == NULL){
     int fd2 = open("mpsh_aliases.txt", O_RDONLY | O_CREAT);
     close(fd2);
     cat("mpsh_aliases.txt"); // on appelle la fonction cat pour afficher le fichier qui contient les alias
   }
   else {
-    if (isAlias(comm) == 1){ // On vérifie si l'alias est bien formaté
+    char unali[100];
+    if (isAlias(comm,unali) == 1){ // On vérifie si l'alias est bien formaté
+      unalias(unali);
       int fd = open("mpsh_aliases.txt",O_RDWR | O_CREAT | O_APPEND);
       char newc[100] = "alias ";
       strcat(comm,"\n");
@@ -48,12 +52,12 @@ void alias(int nbarg,char* comm){
 
 int main(int argc, char * argv[]){
   if (argc < 2){
-    alias(argc,NULL);
+    alias(NULL);
     return 1;
   }
   else {
     if (argc == 2){
-      alias(argc,argv[1]);
+      alias(argv[1]);
       return 1;
     }
     else {
