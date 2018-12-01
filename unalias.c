@@ -38,13 +38,14 @@ void unalias(char *comm){
       }
     }
     // On supprime ensuite le fichier mpsh_aliases et on renomme le nouveau fichier
+    chmod("mpsh_aliases.txt",S_IRWXU); 
     chmod("newal.txt",S_IRWXU);
     close(fd);
     close(fdnew);
     remove("mpsh_aliases.txt");
     rename("newal.txt","mpsh_aliases.txt");
     if (bool == 0){
-      printf("\nAucun alias de ce nom.");
+      /*printf("\nAucun alias de ce nom.");*/
     }
     exit(-1);
   }
