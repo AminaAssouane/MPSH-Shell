@@ -263,7 +263,11 @@ void proc(){
 			if(strcmp(command[0], "ls")==0){
 				int j = fonctionls_main(nbarg,command);				
 			}else if(strcmp(command[0],"cat")==0){
-				cat(command[1]);
+				if(nbarg>2){
+					cat_n(nbarg,command);
+				}else{
+					cat(command[1]);
+				}
 			}else if (strcmp(command[0],"mkdir")==0){
 				makeDir(command[1]);
 			}

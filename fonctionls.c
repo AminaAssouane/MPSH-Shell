@@ -1,7 +1,7 @@
 #include "fonctionls.h"
-// 展示单个文件的详细信息
-void show_file_info(char* filename, struct stat* info_p)
-{
+
+// show the details of every file
+void show_file_info(char* filename, struct stat* info_p){
     char* uid_to_name(), *ctime(), *gid_to_name(), *filemode();
     void mode_to_letters();
     char modestr[11];
@@ -17,106 +17,86 @@ void show_file_info(char* filename, struct stat* info_p)
     printf(" %s\n", filename);
 }
 
-void mode_to_letters(int mode, char str[])
-{
+void mode_to_letters(int mode, char str[]){
     strcpy(str, "----------");
 
-    if (S_ISDIR(mode))
-    {
+    if (S_ISDIR(mode)){
         str[0] = 'd';
     }
 
-    if (S_ISCHR(mode))
-    {
+    if (S_ISCHR(mode)){
         str[0] = 'c';
     }
 
-    if (S_ISBLK(mode))
-    {
+    if (S_ISBLK(mode)){
         str[0] = 'b';
     }
 
-    if ((mode & S_IRUSR))
-    {
+    if ((mode & S_IRUSR)){
         str[1] = 'r';
     }
 
-    if ((mode & S_IWUSR))
-    {
+    if ((mode & S_IWUSR)){
         str[2] = 'w';
     }
 
-    if ((mode & S_IXUSR))
-    {
+    if ((mode & S_IXUSR)){
         str[3] = 'x';
     }
 
-    if ((mode & S_IRGRP))
-    {
+    if ((mode & S_IRGRP)){
         str[4] = 'r';
     }
 
-    if ((mode & S_IWGRP))
-    {
+    if ((mode & S_IWGRP)){
         str[5] = 'w';
     }
 
-    if ((mode & S_IXGRP))
-    {
+    if ((mode & S_IXGRP)){
         str[6] = 'x';
     }
 
-    if ((mode & S_IROTH))
-    {
+    if ((mode & S_IROTH)){
         str[7] = 'r';
     }
 
-    if ((mode & S_IWOTH))
-    {
+    if ((mode & S_IWOTH)){
         str[8] = 'w';
     }
 
-    if ((mode & S_IXOTH))
-    {
+    if ((mode & S_IXOTH)){
         str[9] = 'x';
     }
 }
 
-char* uid_to_name(uid_t uid)
-{
+char* uid_to_name(uid_t uid){
     struct passwd* getpwuid(),* pw_ptr;
     static char numstr[10];
 
-    if((pw_ptr = getpwuid(uid)) == NULL)
-    {
+    if((pw_ptr = getpwuid(uid)) == NULL){
         sprintf(numstr,"%d",uid);
 
         return numstr;
     }
-    else
-    {
+    else{
         return pw_ptr->pw_name;
     }
 }
 
-char* gid_to_name(gid_t gid)
-{
+char* gid_to_name(gid_t gid){
     struct group* getgrgid(),* grp_ptr;
     static char numstr[10];
 
-    if(( grp_ptr = getgrgid(gid)) == NULL)
-    {
+    if(( grp_ptr = getgrgid(gid)) == NULL){
         sprintf(numstr,"%d",gid);
         return numstr;
     }
-    else
-    {
+    else{
         return grp_ptr->gr_name;
     }
 }
 
-void do_ls(char dirname[],int mode)
-{
+void do_ls(char dirname[],int mode){
     DIR* dir_ptr;
     struct dirent* direntp;
 
@@ -127,8 +107,7 @@ void do_ls(char dirname[],int mode)
         if(mode==LS_D){
             printf("%s   ", dirname);
         }
-        else
-        {
+        else{
             char dirs[20][100];
             int dir_count = 0;
             
@@ -152,7 +131,8 @@ void do_ls(char dirname[],int mode)
                         show_file_info(direntp->d_name, &info);
                     }
                     else if(mode == LS_A||mode == LS_NONE||mode == LS_I||mode == LS_AI){
-                        if(mode == LS_I||mode == LS_AI){
+                        
+			    if(mode == LS_I||mode == LS_AI){
                             printf("%llu ", direntp->d_ino);
                         }
 
@@ -174,8 +154,7 @@ void do_ls(char dirname[],int mode)
             }
 	    printf("\n");
 
-            if(mode == LS_R)
-            {
+            if(mode == LS_R){
                 int i=0;
                 printf("\n");
                 for(;i<dir_count;i++){
@@ -191,7 +170,7 @@ void do_ls(char dirname[],int mode)
     }
 }
 
-// 解析一个单词参数，如-l，-i
+// analyse des options (-l，-i)
 int analyzeParam(char* input){
     if(strlen(input)==2)
     {
@@ -215,8 +194,8 @@ int fonctionls_main(int ac,char* av[]){
         do_ls(".",LS_NONE);
     }
     else{
-        int mode = LS_NONE; // 默认为无参数ls
-        int have_file_param = 0; // 是否有输入文件参数
+        int mode = LS_NONE; // ls without option
+        int have_file_param = 0; // make sure if it has the paramater
 
         while(ac>1){
             ac--;
@@ -237,7 +216,7 @@ int fonctionls_main(int ac,char* av[]){
                     av++;
                 }while(ac>=1);
             }
-        }
+        }//fin while
 
         if (!have_file_param){
             do_ls(".",mode);
