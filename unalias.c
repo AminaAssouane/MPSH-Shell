@@ -50,14 +50,14 @@ void unalias(char *comm){
     exit(-1);
   }
   else {
-    printf("Erreur. Il n'y a aucun alias.");
+    printf("Erreur. Il n'y a aucun alias.\n");
     exit(-1);
   }
 }
 
 int main(int argc, char * argv[]){
   if (argc < 2){
-    printf("\nTrop peu d'arguments pour la commande unalias.");
+    printf("Trop peu d'arguments pour la commande unalias.\n");
     return 1;
   }
   else {
@@ -66,7 +66,7 @@ int main(int argc, char * argv[]){
       return 1;
     }
     else {
-      printf("Trop d'arguments pour la commande unalias.");
+      printf("Trop d'arguments pour la commande unalias.\n");
       return 0;
     }
   }
