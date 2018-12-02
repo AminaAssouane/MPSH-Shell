@@ -106,15 +106,15 @@ void unalias(char *comm){
     char bool = 0;
     while (read(fd,buff,size)>0){
       if (strncmp(newcom,buff,size) != 0){
-    write(fdnew,buff,size);
-	read(fd,&c,1);
-	while ((c!='\n')&&(r > 0)){
-	  write(fdnew,&c,1);
-	  r = read(fd,&c,1);
-	}
-	if (r>0){
-	  write(fdnew,&c,1);
-	}
+        write(fdnew,buff,size);
+	    r = read(fd,&c,1);
+	    while ((c!='\n')&&(r > 0)){
+	        write(fdnew,&c,1);
+	        r = read(fd,&c,1);
+	    }
+	    if (r>0){
+	        write(fdnew,&c,1);
+	    }
       }
       else {
 	bool = 1;
