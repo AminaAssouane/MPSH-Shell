@@ -1,3 +1,6 @@
-alias ls1=ls
-alias FF=cd
-alias ls=lll
+alias l1=ls
+alas FF=c
+alias s=lll
+aias lllls
+alia a=ls
+aias d=c
