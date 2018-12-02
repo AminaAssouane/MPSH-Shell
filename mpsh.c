@@ -187,12 +187,13 @@ void alias(char* comm){
     char unali[100];
     if (isAlias(comm,unali) == 1){ // On vérifie si l'alias est bien formaté
       unalias(unali);
-      int fd = open("mpsh_aliases.txt",O_RDWR | O_CREAT | O_APPEND);
+      int alias = open("mpsh_aliases.txt",O_RDWR | O_CREAT | O_APPEND);
       char newc[100] = "alias ";
       strcat(comm,"\n");
       strcat(newc,comm);
-      write(fd,newc,strlen(comm)+6);
-      close(fd);
+      printf("newc = %s\n", newc);
+      write(alias,newc,strlen(newc));
+      close(alias);
     }
     else {
       printf("Erreur : alias : %s non trouve",comm);
