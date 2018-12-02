@@ -20,7 +20,7 @@ void unalias(char *comm){
     while (read(fd,buff,size)>0){
       if (strncmp(newcom,buff,size) != 0){
     write(fdnew,buff,size);
-	read(fd,&c,1);
+	  r = read(fd,&c,1);
 	while ((c!='\n')&&(r > 0)){
 	  write(fdnew,&c,1);
 	  r = read(fd,&c,1);
@@ -47,11 +47,9 @@ void unalias(char *comm){
     if (bool == 0){
       /*printf("\nAucun alias de ce nom.");*/
     }
-    exit(-1);
   }
   else {
     printf("Erreur. Il n'y a aucun alias.\n");
-    exit(-1);
   }
 }
 
