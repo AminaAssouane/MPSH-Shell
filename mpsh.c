@@ -127,11 +127,9 @@ void unalias(char *comm){
     if (bool == 0){
       /*printf("\nAucun alias de ce nom.");*/
     }
-    exit(-1);
   }
   else {
     printf("Erreur. Il n'y a aucun alias.\n");
-    exit(-1);
   }
 }
 
