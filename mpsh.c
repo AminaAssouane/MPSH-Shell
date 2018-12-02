@@ -9,7 +9,6 @@
 
 #include "mpsh.h"
 
-
 char **read_input(char *input){
     
 	char **cmd = malloc(SHELL_BUFFER*sizeof(char *)); //pour l'instant, 8 character est maximum
@@ -47,8 +46,6 @@ void make_prompt(){
 	getcwd(pathname, sizeof(pathname));		//obtenir l'adresse actuel
 	printf("[%s-%s-%s]",username,hostname,pathname);
 	fflush(stdout);					//renouvoler espace
-
-
 }
 
 int cd(char *path){
@@ -58,6 +55,16 @@ int cd(char *path){
 char * pwd(){
 	char res[SIZE];
 	return getcwd(res,SIZE);
+}
+
+short type(char* command){
+	char* cmdInterne[9] = {"cd", "exit", "pwd", "echo", "unmask", "history", "alias", "unalias","type"};
+	for(int i=0;i<9;i++){
+		if(strcmp(command,cmdInterne[i])==0){
+			return 1;//this command is a shell builtin 
+		}
+	}
+	return 2;
 }
 
 void my_umask (int argc, char **argv){
@@ -321,6 +328,13 @@ void proc(){
 			my_alias(nbarg,command);
 		}else if(strcmp(command[0],"unalias")==0){
 			my_unalias(nbarg,command);
+		}else if(strcmp(command[0],"type")==0){
+			int t = type(command[1]);
+			if(t==1){
+				printf("%s is a shell builtin\n",command[1]);
+			}else{
+				printf("%s is not a shell builtin\n",command[1]);
+			}
 		}
 
 		child_pid = fork();
