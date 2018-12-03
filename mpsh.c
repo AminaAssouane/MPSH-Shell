@@ -239,8 +239,9 @@ int history(int argc,char ** argv,char *h [],int nbcom){
 		int i;
 		if(nbcom>1000){
 			i=1000;
-			while((i--)>0){
-				printf("%s\n",h[nbcom-i]);
+			while(i>=0){
+				printf("%s\n",h[nbcom-i-1]);
+				i--;
 			}
 			return 1;
 		}else{
@@ -270,6 +271,9 @@ int history(int argc,char ** argv,char *h [],int nbcom){
 	}
 	return 1;
 }
+
+
+
 void proc(){
 
 	int nbcom=0;
