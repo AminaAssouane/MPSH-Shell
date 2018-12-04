@@ -48,25 +48,18 @@ void make_prompt(){
 	fflush(stdout);					//renouvoler espace
 }
 
+//cd
 int cd(char *path){
 	return chdir(path);
 }
 
+//pwd
 char * pwd(){
 	char res[SIZE];
 	return getcwd(res,SIZE);
 }
 
-short type(char* command){
-	char* cmdInterne[9] = {"cd", "exit", "pwd", "echo", "unmask", "history", "alias", "unalias","type"};
-	for(int i=0;i<9;i++){
-		if(strcmp(command,cmdInterne[i])==0){
-			return 1;//this command is a shell builtin 
-		}
-	}
-	return 2;
-}
-
+//umask
 void my_umask (int argc, char **argv){
 	if (argc == 2){
 		if(strlen(argv[1])>3){
@@ -85,6 +78,7 @@ void my_umask (int argc, char **argv){
 
 }
 
+//echo
 void my_echo (int argv,char ** argc){
     int i;
     for (i=1;i<argv;i++){
@@ -93,36 +87,36 @@ void my_echo (int argv,char ** argc){
     printf("\n");
 }
 
+//Ce qui provoque l'effacement dans le fichier
 void unalias(char *comm){
-  int fd = open("mpsh_aliases.txt",O_RDWR | O_CREAT);
-  if (fd != -1){
-    int fdnew = open("newal.txt",O_RDWR | O_CREAT);
-    char newcom[50] = "alias ";
-    char c;
-    strcat(newcom,comm);
-    int size = strlen(newcom);
-    char *buff = malloc(size);
-    int r;
-    char bool = 0;
-    while (read(fd,buff,size)>0){
-      if (strncmp(newcom,buff,size) != 0){
-        write(fdnew,buff,size);
-	    r = read(fd,&c,1);
-	    while ((c!='\n')&&(r > 0)){
-	        write(fdnew,&c,1);
-	        r = read(fd,&c,1);
-	    }
-	    if (r>0){
-	        write(fdnew,&c,1);
-	    }
-      }
-      else {
-	bool = 1;
-	read(fd,&c,1);
-	while (c!='\n'){
-	  read(fd,&c,1);
-	}
-      }
+	int fd = open("mpsh_aliases.txt",O_RDWR | O_CREAT);
+  	if (fd != -1){
+   		int fdnew = open("newal.txt",O_RDWR | O_CREAT);
+    	char newcom[50] = "alias ";
+    	char c;
+    	strcat(newcom,comm);
+    	int size = strlen(newcom);
+    	char *buff = malloc(size);
+    	int r;
+    	char bool = 0;
+    	while (read(fd,buff,size)>0){
+      		if (strncmp(newcom,buff,size) != 0){
+        		write(fdnew,buff,size);
+	    		r = read(fd,&c,1);
+	    		while ((c!='\n')&&(r > 0)){
+	        		write(fdnew,&c,1);
+	        		r = read(fd,&c,1);
+	    		}
+	    	if (r>0){
+	        	write(fdnew,&c,1);
+	    	}
+      	} else {
+			bool = 1;
+			read(fd,&c,1);
+			while (c!='\n'){
+	  			read(fd,&c,1);
+			}
+      	}
     }
     // On supprime ensuite le fichier mpsh_aliases et on renomme le nouveau fichier
     chmod("mpsh_aliases.txt",S_IRWXU); 
@@ -134,88 +128,81 @@ void unalias(char *comm){
     if (bool == 0){
       /*printf("\nAucun alias de ce nom.");*/
     }
-  }
-  else {
-    printf("Erreur. Il n'y a aucun alias.\n");
-  }
+	} else {
+    	printf("Erreur. Il n'y a aucun alias.\n");
+  	}
 }
 
+//Main de unalias
 int my_unalias(int argc, char * argv[]){
-  if (argc < 2){
-    printf("Trop peu d'arguments pour la commande unalias.\n");
-    return 1;
-  }
-  else {
-    if (argc == 2){
-      unalias(argv[1]);
-      return 1;
-    }
-    else {
-      printf("Trop d'arguments pour la commande unalias.\n");
-      return 0;
-    }
-  }
+  	if (argc < 2){
+   		printf("Trop peu d'arguments pour la commande unalias.\n");
+    	return 1;
+  	} else {
+    	if (argc == 2){
+      		unalias(argv[1]);
+      		return 1;
+    	} else {
+      		printf("Trop d'arguments pour la commande unalias.\n");
+      		return 0;
+    	}
+  	}
 }
 
 /* fonction qui verifie si l'argument apres la commande alias est bien formaté */
 short isAlias(char *comm, char *unalias){ 
-  int i = 0;
-  int size = strlen(comm); 
-  if (comm[0] == '='){
-    return 0;
-  }
-  while((comm[i] != '=') && (i < size)){
-    unalias[i] = comm[i];
-    i++;
-  }
-  if (comm[i] == '='){
-    unalias[i] = '\0';
-    return 1;
-  }
-  else {
-    return 0;
-  }
+	int i = 0;
+	int size = strlen(comm); 
+  	if (comm[0] == '='){
+    	return 0;
+  	}
+  	while((comm[i] != '=') && (i < size)){
+    	unalias[i] = comm[i];
+    	i++;
+  	}
+  	if (comm[i] == '='){
+    	unalias[i] = '\0';
+    	return 1;
+  	} else {
+    	return 0;
+  	}
 }
 
 void alias(char* comm){
-  if (comm == NULL){
-    int fd2 = open("mpsh_aliases.txt", O_RDONLY | O_CREAT);
-    close(fd2);
-    cat("mpsh_aliases.txt"); // on appelle la fonction cat pour afficher le fichier qui contient les alias
-  }
-  else {
-    char unali[100];
-    if (isAlias(comm,unali) == 1){ // On vérifie si l'alias est bien formaté
-      unalias(unali);
-      int alias = open("mpsh_aliases.txt",O_RDWR | O_CREAT | O_APPEND);
-      char newc[100] = "alias ";
-      strcat(comm,"\n");
-      strcat(newc,comm);
-      printf("newc = %s\n", newc);
-      write(alias,newc,strlen(newc));
-      close(alias);
-    }
-    else {
-      printf("Erreur : alias : %s non trouve",comm);
-    }
-  }
+	if (comm == NULL){
+    	int fd = open("mpsh_aliases.txt", O_RDONLY | O_CREAT);
+    	close(fd);
+    	cat("mpsh_aliases.txt"); // on appelle la fonction cat pour afficher le fichier qui contient les alias
+  	} else {
+    	char unali[100];
+    	if (isAlias(comm,unali) == 1){ // On vérifie si l'alias est bien formaté
+     		unalias(unali);
+      		int alias = open("mpsh_aliases.txt",O_RDWR | O_CREAT | O_APPEND);
+      		char newc[100] = "alias ";
+      		strcat(comm,"\n");
+      		strcat(newc,comm);
+      		printf("newc = %s\n", newc);
+      		write(alias,newc,strlen(newc));
+      		close(alias);
+    	} else {
+      		printf("Erreur : alias : %s non trouve",comm);
+    	}
+  	}
 }
 
 int my_alias(int argc, char ** argv){
-  if (argc < 2){
-    alias(NULL);
-    return 1;
-  }
-  else {
-    if (argc == 2){
-      alias(argv[1]);
-      return 1;
-    }
-    else {
-      printf("Erreur. Trop d'arguments pour la commande alias.");
-      return 0;
-    }
-  }
+	if (argc < 2){
+    	alias(NULL);
+    	return 1;
+  	} else {
+    	if (argc == 2){
+      		alias(argv[1]);
+      		return 1;
+    	} else {
+      		printf("Erreur. Trop d'arguments pour la commande alias.");
+     	 	return 0;
+   		}
+  	}
 }
 
 int nbargs(char ** x){
@@ -225,8 +212,7 @@ int nbargs(char ** x){
 	return i;
 }
 
-char* concat(const char *s1, const char *s2)
-{
+char* concat(const char *s1, const char *s2) {
     char *result = malloc(strlen(s1) + strlen(s2) + 2);
     strcpy(result, s1);
     strcat(result," ");
@@ -272,24 +258,73 @@ int history(int argc,char ** argv,char *h [],int nbcom){
 	return 1;
 }
 
+int estAlias(char *comm){
+	int f = open("mpsh_aliases.txt", O_RDONLY );
+	if(f==-1)
+		printf("impossible d'ouvrir le fichier\n");
+	int i=0,j=0,k=0;
+	char c=read(f,&c,1);
+	char prec;
+	char * s=malloc(SHELL_BUFFER*sizeof(char)); 
+	char * res=malloc(SHELL_BUFFER*sizeof(char));
+	while(c!=EOF){//Lors de ma boucle je ne trouve pas '\0', aucune idée de pourquoi
+		while (c!='\n'){
+	  		s[i]=c;
+	  		i++;
+	  		read(f,&c,1);
+		}
+		s[i]='\0';
+		while(s[j]!=' ')
+			j++;
+		j++;//Saut de l'espace
+		while(s[j]!='='){
+			res[k]=s[j];
+			k++;
+			j++;
+		}
+		j++;//Saut de '='
+		if(strcmp(comm,res)==0){
+			printf("%s est un alias de %s \n",res,s+j);
+			return 1;
+			break;
+		}
+		prec=c;
+		read(f,&c,1);
+		if(prec==c)
+			return 0;
+		i=0;
+		j=0;
+		k=0;
+	}
+	close(f);
+	return 0;
+}
 
+//type
+short type(char* command){
+	char* cmdInterne[9] = {"cd", "exit", "pwd", "echo", "unmask", "history", "alias", "unalias","type"};
+	for(int i=0;i<9;i++){
+		if(strcmp(command,cmdInterne[i])==0){
+			printf("%s est une commande primitive du shell\n",command);
+			return 0;
+		}
+	}
+	if(estAlias(command))
+		return 1;
+	return 2;
+}
 
 void proc(){
-
 	int nbcom=0;
 	char ** h= malloc(SIZE*sizeof(char*));
 	int t=SIZE;
 	char **command;
 	int nbarg;
-	//char *input;
 	pid_t child_pid;
 	int stat_loc;
-	
-	//char pathname[SHELL_BUFFER];
 
 	while(TRUE){
 
-		//char* input = readline("~$ ");
 		make_prompt();
 		command = read_input(readline("~s "));
 		nbarg=nbargs(command);
@@ -315,9 +350,6 @@ void proc(){
 			if(cd(command[1])<0){
 				perror(command[1]);
 			}
-
-			//à compléter
-			 //test
 		}else if (strcmp(command[0], "exit") == 0){
 			exit(0);
 		}else if(strcmp(command[0], "pwd") == 0){
@@ -334,11 +366,11 @@ void proc(){
 			my_unalias(nbarg,command);
 		}else if(strcmp(command[0],"type")==0){
 			int t = type(command[1]);
-			if(t==1){
-				printf("%s is a shell builtin\n",command[1]);
-			}else{
-				printf("%s is not a shell builtin\n",command[1]);
+			if (t==2){
+				printf("%s est /bin/%s\n",command[1],command[1]);
 			}
+		}else if(estAlias(command[0])==1){
+			printf("a completer\n");
 		}
 
 		child_pid = fork();
@@ -349,11 +381,6 @@ void proc(){
 		}
 		
 		if(child_pid == 0){
-			/*	
-			if(execvp(command[0], command)<0) {
-				perror(command[0]);
-				exit(1);
-			}*/
 			if(strcmp(command[0], "ls")==0){
 				fonctionls_main(nbarg,command);				
 			}else if(strcmp(command[0],"cat")==0){
@@ -370,8 +397,6 @@ void proc(){
 		}else{
 			waitpid(child_pid, &stat_loc, WUNTRACED);
 		}
-
-	
 		free(command);
 	}
 }
