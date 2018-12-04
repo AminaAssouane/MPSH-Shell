@@ -300,6 +300,47 @@ int estAlias(char *comm){
 	return 0;
 }
 
+int AliasComp(char *comm, char * fin){
+	int f = open("mpsh_aliases.txt", O_RDONLY );
+	if(f==-1)
+		printf("impossible d'ouvrir le fichier\n");
+	int i=0,j=0,k=0;
+	char c=read(f,&c,1);
+	char prec;
+	char * s=malloc(SHELL_BUFFER*sizeof(char)); 
+	char * res=malloc(SHELL_BUFFER*sizeof(char));
+	while(c!=EOF){//Lors de ma boucle je ne trouve pas '\0', aucune idée de pourquoi
+		while (c!='\n'){
+	  		s[i]=c;
+	  		i++;
+	  		read(f,&c,1);
+		}
+		s[i]='\0';
+		while(s[j]!=' ')
+			j++;
+		j++;//Saut de l'espace
+		while(s[j]!='='){
+			res[k]=s[j];
+			k++;
+			j++;
+		}
+		j++;//Saut de '='
+		if(strcmp(comm,res)==0){
+			fin=s+j;
+			return 1;
+		}
+		prec=c;
+		read(f,&c,1);
+		if(prec==c)
+			return 0;
+		i=0;
+		j=0;
+		k=0;
+	}
+	close(f);
+	return 0;
+}
+
 //type
 short type(char* command){
 	char* cmdInterne[9] = {"cd", "exit", "pwd", "echo", "unmask", "history", "alias", "unalias","type"};
@@ -314,6 +355,62 @@ short type(char* command){
 	return 2;
 }
 
+void parse(char ** command,char **h,int nbcom,pid_t child_pid,int stat_loc){
+	char * res=malloc(SIZE*sizeof(char));
+	int nbarg=nbargs(command);
+	if(strcmp(command[0], "cd") == 0){
+		if(cd(command[1])<0){
+			perror(command[1]);
+		}
+	}else if (strcmp(command[0], "exit") == 0){
+			exit(0);
+	}else if(strcmp(command[0], "pwd") == 0){
+		printf("%s\n", pwd());
+	}else if(strcmp(command[0], "echo")==0){
+		my_echo(nbarg,command);
+	}else if(strcmp(command[0], "umask")==0){
+		my_umask(nbarg,command);
+	}else if(strcmp(command[0], "history")==0){
+		history(nbarg,command,h,nbcom);
+	}else if(strcmp(command[0],"alias")==0){
+		my_alias(nbarg,command);
+	}else if(strcmp(command[0],"unalias")==0){
+		my_unalias(nbarg,command);
+	}else if(strcmp(command[0],"type")==0){
+		int t = type(command[1]);
+		if (t==2){
+			printf("%s est /bin/%s\n",command[1],command[1]);
+		}
+	}else if(AliasComp(command[0],res)==1){
+		command=read_input(res);
+		parse(command,h,nbcom,child_pid,stat_loc);
+	}
+
+	child_pid = fork();
+
+	if(child_pid <0){
+		perror("Fork failed");
+		exit(1);
+	}
+		
+	if(child_pid == 0){
+		if(strcmp(command[0], "ls")==0){
+			fonctionls_main(nbarg,command);				
+		}else if(strcmp(command[0],"cat")==0){
+			if(nbarg>2){
+				cat_n(nbarg,command);
+			}else{
+				cat(command[1]);
+			}
+		}else if (strcmp(command[0],"mkdir")==0){
+			makeDir(command[1]);
+		}
+		exit(1);
+		printf("main : execvp failed \n");
+	}else{
+		waitpid(child_pid, &stat_loc, WUNTRACED);
+	}	
+}
 void proc(){
 	int nbcom=0;
 	char ** h= malloc(SIZE*sizeof(char*));
@@ -322,6 +419,7 @@ void proc(){
 	int nbarg;
 	pid_t child_pid;
 	int stat_loc;
+	char * res = malloc(SIZE*sizeof(char));
 
 	while(TRUE){
 
@@ -369,8 +467,9 @@ void proc(){
 			if (t==2){
 				printf("%s est /bin/%s\n",command[1],command[1]);
 			}
-		}else if(estAlias(command[0])==1){
-			printf("a completer\n");
+		}else if(AliasComp(command[0],res)==1){
+			command=read_input(res);
+			parse(command,h,nbcom,child_pid,stat_loc);
 		}
 
 		child_pid = fork();
