@@ -118,7 +118,7 @@ void unalias(char *comm){
 			}
       	}
     }
-    // On supprime ensuite le fichier mpsh_aliases et on renomme le nouveau fichier
+	// On supprime ensuite le fichier mpsh_aliases et on renomme le nouveau fichier
     chmod("mpsh_aliases.txt",S_IRWXU); 
     chmod("newal.txt",S_IRWXU);
     close(fd);
@@ -149,7 +149,7 @@ int my_unalias(int argc, char * argv[]){
   	}
 }
 
-/* fonction qui verifie si l'argument apres la commande alias est bien formaté */
+/* Fonction qui verifie si l'argument apres la commande alias est bien formaté */
 short isAlias(char *comm, char *unalias){ 
 	int i = 0;
 	int size = strlen(comm); 
@@ -325,8 +325,14 @@ int AliasComp(char *comm, char * fin){
 			j++;
 		}
 		j++;//Saut de '='
+		i=0;
 		if(strcmp(comm,res)==0){
-			fin=s+j;
+			while(s[j]!='\0'){
+				fin[i]=s[j];
+				j++;
+				i++;
+			}
+			fin[i]='\0';
 			return 1;
 		}
 		prec=c;
@@ -355,7 +361,7 @@ short type(char* command){
 	return 2;
 }
 
-void parse(char ** command,char **h,int nbcom,pid_t child_pid,int stat_loc){
+void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc){
 	char * res=malloc(SIZE*sizeof(char));
 	int nbarg=nbargs(command);
 	if(strcmp(command[0], "cd") == 0){
@@ -411,6 +417,7 @@ void parse(char ** command,char **h,int nbcom,pid_t child_pid,int stat_loc){
 		waitpid(child_pid, &stat_loc, WUNTRACED);
 	}	
 }
+
 void proc(){
 	int nbcom=0;
 	char ** h= malloc(SIZE*sizeof(char*));
@@ -419,7 +426,7 @@ void proc(){
 	int nbarg;
 	pid_t child_pid;
 	int stat_loc;
-	char * res = malloc(SIZE*sizeof(char));
+	char res[SHELL_BUFFER];
 
 	while(TRUE){
 
@@ -468,6 +475,7 @@ void proc(){
 				printf("%s est /bin/%s\n",command[1],command[1]);
 			}
 		}else if(AliasComp(command[0],res)==1){
+			free(command);
 			command=read_input(res);
 			parse(command,h,nbcom,child_pid,stat_loc);
 		}

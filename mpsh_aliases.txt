@@ -1,5 +1,6 @@
-alias a=ls
 alias c=cd
-alias b=echo
 alias d=pwd
 alias e=alias
+alias b=echo
+alias a=ls
+alias h=history
