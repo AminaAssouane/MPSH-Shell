@@ -475,9 +475,15 @@ void proc(){
 				printf("%s est /bin/%s\n",command[1],command[1]);
 			}
 		}else if(AliasComp(command[0],res)==1){
+			char * tmp=res;
+			for (int i=0;i<nbarg;i++){
+				tmp=concat(tmp,command[i]);
+			}
 			free(command);
-			command=read_input(res);
+			command=read_input(tmp);
+			printf("%s\n",command[1] );
 			parse(command,h,nbcom,child_pid,stat_loc);
+			
 		}
 
 		child_pid = fork();
