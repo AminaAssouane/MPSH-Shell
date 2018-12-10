@@ -422,31 +422,6 @@ void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc){
 		free(command);
 		command=read_input(tmp);
 		parse(command,h,nbcom,child_pid,stat_loc);
-	}
-
-	child_pid = fork();
-
-	if(child_pid <0){
-		perror("Fork failed");
-		exit(1);
-	}
-		
-	if(child_pid == 0){
-		if(strcmp(command[0], "ls")==0){
-			fonctionls_main(nbarg,command);				
-		}else if(strcmp(command[0],"cat")==0){
-			if(nbarg>2){
-				cat_n(nbarg,command);
-			}else{
-				cat(command[1]);
-			}
-		}else if (strcmp(command[0],"mkdir")==0){
-			makeDir(command[1]);
-		}
-		exit(1);
-		printf("main : execvp failed \n");
-	}else{
-		waitpid(child_pid, &stat_loc, WUNTRACED);
 	}	
 }
 
@@ -495,7 +470,6 @@ void proc(){
 			if(command[1][0]=='$'){
 				char * res=malloc(SIZE*sizeof(char));
 				res=commEntreparenthese(resteDeLaCommande(command));
-				printf("%s\n",res);
 				free(command);
 				command=read_input(res);
 				parse(command,h,nbcom,child_pid,stat_loc);
