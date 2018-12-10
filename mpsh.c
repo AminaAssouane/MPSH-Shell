@@ -48,6 +48,47 @@ void make_prompt(){
 	fflush(stdout);					//renouvoler espace
 }
 
+int nbargs(char ** x){
+	int i=0;
+	while(x[i]!=NULL)
+		i++;
+	return i;
+}
+
+char* concat(const char *s1, const char *s2) {
+    char *result = malloc(strlen(s1) + strlen(s2) + 2);
+    strcpy(result, s1);
+    strcat(result," ");
+    strcat(result, s2);
+    return result;
+}
+
+char * commEntreparenthese(char * s){
+	char *res= malloc(SHELL_BUFFER);
+	int j=0;
+	int i=0;
+	while(s[i]!='(')
+		i++;
+	i++;
+	while(s[i]!=')'){
+		res[j]=s[i];
+		i++;
+		j++;
+	}
+	return res;
+}
+
+char * resteDeLaCommande(char **comm){
+	int i;
+	int size=strlen(comm[1]);
+	char * tmp = comm[1]; 
+	for (i=2;i<nbargs(comm);i++){
+		size+=strlen(comm[i]);
+		tmp=concat(tmp,comm[i]);
+	}
+	tmp[size+1]='\0';
+	return tmp;
+}
 //cd
 int cd(char *path){
 	return chdir(path);
@@ -205,20 +246,6 @@ int my_alias(int argc, char ** argv){
   	}
 }
 
-int nbargs(char ** x){
-	int i=0;
-	while(x[i]!=NULL)
-		i++;
-	return i;
-}
-
-char* concat(const char *s1, const char *s2) {
-    char *result = malloc(strlen(s1) + strlen(s2) + 2);
-    strcpy(result, s1);
-    strcat(result," ");
-    strcat(result, s2);
-    return result;
-}
 
 int history(int argc,char ** argv,char *h [],int nbcom){
 	if(argc==1){
@@ -388,7 +415,12 @@ void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc){
 			printf("%s est /bin/%s\n",command[1],command[1]);
 		}
 	}else if(AliasComp(command[0],res)==1){
-		command=read_input(res);
+		char * tmp=res;
+		for (int i=1;i<nbarg;i++){
+			tmp=concat(tmp,command[i]);
+		}
+		free(command);
+		command=read_input(tmp);
 		parse(command,h,nbcom,child_pid,stat_loc);
 	}
 
@@ -460,7 +492,15 @@ void proc(){
 		}else if(strcmp(command[0], "pwd") == 0){
 			printf("%s\n", pwd());
 		}else if(strcmp(command[0], "echo")==0){
-			my_echo(nbarg,command);
+			if(command[1][0]=='$'){
+				char * res=malloc(SIZE*sizeof(char));
+				res=commEntreparenthese(resteDeLaCommande(command));
+				printf("%s\n",res);
+				free(command);
+				command=read_input(res);
+				parse(command,h,nbcom,child_pid,stat_loc);
+			}else
+				my_echo(nbarg,command);
 		}else if(strcmp(command[0], "umask")==0){
 			my_umask(nbarg,command);
 		}else if(strcmp(command[0], "history")==0){
@@ -476,12 +516,11 @@ void proc(){
 			}
 		}else if(AliasComp(command[0],res)==1){
 			char * tmp=res;
-			for (int i=0;i<nbarg;i++){
+			for (int i=1;i<nbarg;i++){
 				tmp=concat(tmp,command[i]);
 			}
 			free(command);
 			command=read_input(tmp);
-			printf("%s\n",command[1] );
 			parse(command,h,nbcom,child_pid,stat_loc);
 			
 		}

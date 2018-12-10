@@ -88,29 +88,8 @@ void cat_n(int argc, char* argv[]){
 		fprintf(stdout,"%*d",l,n);
 		printf("  ");
 		while((c=fgetc(p)) != '\n'){
-			//printf("%c", c);
 			fputc(c,stdout);
 		}
 		printf("\n");	
 	}	
 }
-
-
-/*
-int main(int argc, char* argv[]){
-  if (argc < 2){
-    printf("Erreur.");
-    return 0;
-  }
-  else {
-    if (argc == 2){
-      cat(argv[1]);
-      return 1;
-    }
-    else { 
-      printf("Erreur. Trop d'arguments pour la fonction cat.");
-      return 0;
-    }
-  }
-}
-*/
