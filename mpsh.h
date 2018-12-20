@@ -22,7 +22,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <erron.h>
 #include "fonctionls.h"
+
 #define TRUE 1
 #define SHELL_BUFFER  64
 #define SIZE 1024

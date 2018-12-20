@@ -425,6 +425,24 @@ void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc){
 	}	
 }
 
+void addCurrentPathToRc(){
+
+	char currentPath[80];
+	getcwd(currentPath,sizeof(currentPath));
+
+
+	const char *filename = "currentPath/abc";
+	int p = open(filename, O_APPEND);
+	
+	char *res = "export PATH=\"";
+	strcat(res,currentPath);
+	char *tail = ":\$PATH";
+	strcat(res,tail);
+
+	write(p,res,strlen(res));
+	close(p);
+}
+
 void proc(){
 	int nbcom=0;
 	char ** h= malloc(SIZE*sizeof(char*));
