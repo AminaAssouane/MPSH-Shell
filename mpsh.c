@@ -80,13 +80,9 @@ char * commEntreparenthese(char * s){
 
 char * resteDeLaCommande(char **comm){
 	int i;
-	int size=strlen(comm[1]);
-	char * tmp = comm[1]; 
-	for (i=2;i<nbargs(comm);i++){
-		size+=strlen(comm[i]);
+	char * tmp= malloc(SIZE*sizeof(char));
+	for(i=1;i<nbargs(comm);i++)
 		tmp=concat(tmp,comm[i]);
-	}
-	tmp[size+1]='\0';
 	return tmp;
 }
 //cd
@@ -387,7 +383,45 @@ short type(char* command){
 		return 1;
 	return 2;
 }
-
+//export
+void exportN(char ** e,int nbexp){
+	int i;
+	for (i=0;i<nbexp;i++){
+		printf("%s\n",e[i]);
+	}
+}
+char * parcoursexp(char *s,char ** e,int nbexp){
+	int i=0;
+	int j=0;
+	int k=0;
+	char * tmp=malloc(SIZE*sizeof(char));
+	char * tmp2=malloc(SIZE*sizeof(char));
+	while(k<nbexp){
+		while(e[k][i]!='='){
+			tmp[i]=e[k][i];
+			i++;
+		}
+		i++;
+		tmp[i]='\0';
+		if(strcmp(tmp,s)==0){
+			while(i<strlen(e[k])){
+				tmp2[j]=e[k][i];
+				i++;
+				j++;
+			}
+			j++;
+			tmp2[j]='\0';
+			return tmp2;
+		}
+		i=0;
+		j=0;
+		tmp[i]='\0';
+		tmp2[i]='\0';
+		k++;
+	}
+	tmp2="Pas de export trouver !";
+	return tmp2;
+}
 void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc){
 	char * res=malloc(SIZE*sizeof(char));
 	int nbarg=nbargs(command);
@@ -446,6 +480,8 @@ void addCurrentPathToRc(){
 void proc(){
 	int nbcom=0;
 	char ** h= malloc(SIZE*sizeof(char*));
+	int nbexp = 0;
+	char ** exp = malloc(SIZE*sizeof(char*));
 	int t=SIZE;
 	char **command;
 	int nbarg;
@@ -480,17 +516,28 @@ void proc(){
 			if(cd(command[1])<0){
 				perror(command[1]);
 			}
+		}else if(command[0][0]=='$'){
+			char * tmp=malloc(SIZE*sizeof(char));
+			char * tmp2=malloc(SIZE*sizeof(char));			
+			//printf("%s\n",command[0]+1 );
+			tmp=parcoursexp((command[0])+1,exp,nbexp);
+			printf("%s\n",tmp );
+			tmp2=resteDeLaCommande(command);
+			printf("Test %s\n",tmp2 );
+			tmp=concat(tmp,tmp2);
+			printf("Test %s\n",tmp );
+			free(command);
+			command=read_input(tmp);
+			parse(command,h,nbcom,child_pid,stat_loc);
 		}else if (strcmp(command[0], "exit") == 0){
 			exit(0);
 		}else if(strcmp(command[0], "pwd") == 0){
 			printf("%s\n", pwd());
 		}else if(strcmp(command[0], "echo")==0){
 			if(command[1][0]=='$'){
-				char * res=malloc(SIZE*sizeof(char));
-				res=commEntreparenthese(resteDeLaCommande(command));
-				free(command);
-				command=read_input(res);
-				parse(command,h,nbcom,child_pid,stat_loc);
+				char * tmp=malloc(SIZE*sizeof(char));
+				tmp=concat(parcoursexp((command[1])+1,exp,nbexp),(resteDeLaCommande(command)));
+				printf("%s\n", tmp);
 			}else
 				my_echo(nbarg,command);
 		}else if(strcmp(command[0], "umask")==0){
@@ -515,6 +562,15 @@ void proc(){
 			command=read_input(tmp);
 			parse(command,h,nbcom,child_pid,stat_loc);
 			
+		}else if(strcmp(command[0],"export")==0){
+			if(nbarg!=2){
+				printf("Mauvais nombre d'argument\n");
+			}else if (strcmp(command[1],"-n")==0){
+				exportN(exp,nbexp);
+			}else{
+				exp[nbexp]=command[1];
+				nbexp++;
+			}
 		}
 
 		child_pid = fork();

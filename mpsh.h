@@ -23,7 +23,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <erron.h>
+#include <errno.h>
 #include "fonctionls.h"
 
 #define TRUE 1
