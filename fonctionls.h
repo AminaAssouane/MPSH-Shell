@@ -7,20 +7,20 @@
 #include <unistd.h>
 #include <string.h>
 
-#define LS_NONE 0
-#define LS_L 101
-#define LS_R 102
-#define LS_D 103
-#define LS_I 104
+#define OP_NONE 0
+#define OP_L 101
+#define OP_R 102
+#define OP_D 103
+#define OP_I 104
 
-#define LS_A 200
+#define OP_A 200
 
-#define LS_AL (LS_A+LS_L)
-#define LS_AI (LS_A+LS_I)
+#define OP_AL (OP_A+OP_L)
+#define OP_AI (OP_A+OP_I)
 
 
-void show_file_info(char* filename, struct stat* info_p);
-void mode_to_letters(int mode, char str[]);
+void fichier_info(char* filename, struct stat* info_p);
+void tran_mode_chrac(int mode, char str[]);
 char* uid_to_name(uid_t uid);
 char* gid_to_name(gid_t gid);
 void do_ls(char dirname[],int mode);

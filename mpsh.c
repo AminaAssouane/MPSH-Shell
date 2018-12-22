@@ -590,7 +590,7 @@ void proc(){
 					cat(command[1]);
 				}
 			}else if (strcmp(command[0],"mkdir")==0){
-				makeDir(command[1]);
+				make_Dir(command[1]);
 			}
 			exit(1);
 			printf("main : execvp failed \n");

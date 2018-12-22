@@ -1,12 +1,12 @@
 #include "fonctionls.h"
 
 // show the details of every file
-void show_file_info(char* filename, struct stat* info_p){
+void fichier_info(char* filename, struct stat* info_p){
     char* uid_to_name(), *ctime(), *gid_to_name(), *filemode();
-    void mode_to_letters();
+    void tran_mode_charac();
     char modestr[11];
 
-    mode_to_letters(info_p->st_mode, modestr);
+    tran_mode_charac(info_p->st_mode, modestr);
 
     printf("%s", modestr);
     printf(" %4d", (int) info_p->st_nlink);
@@ -17,7 +17,7 @@ void show_file_info(char* filename, struct stat* info_p){
     printf(" %s\n", filename);
 }
 
-void mode_to_letters(int mode, char str[]){
+void tran_mode_charac(int mode, char str[]){
     strcpy(str, "----------");
 
     if (S_ISDIR(mode)){
@@ -104,7 +104,7 @@ void do_ls(char dirname[],int mode){
         fprintf(stderr, "ls2: cannot open %s \n", dirname);
     }
     else{
-        if(mode==LS_D){
+        if(mode==OP_D){
             printf("%s   ", dirname);
         }
         else{
@@ -117,7 +117,7 @@ void do_ls(char dirname[],int mode){
                     continue;
                 }
 
-                char complete_d_name[200];  // 文件的完整路径
+                char complete_d_name[200];  //
                 strcpy (complete_d_name,dirname);
                 strcat (complete_d_name,"/");
                 strcat (complete_d_name,direntp->d_name);
@@ -127,18 +127,18 @@ void do_ls(char dirname[],int mode){
                     perror(complete_d_name);
                 }
                 else{
-                    if(mode == LS_L||mode == LS_AL){
-                        show_file_info(direntp->d_name, &info);
+                    if(mode == OP_L||mode == OP_AL){
+                        fichier_info(direntp->d_name, &info);
                     }
-                    else if(mode == LS_A||mode == LS_NONE||mode == LS_I||mode == LS_AI){
+                    else if(mode == OP_A||mode == OP_NONE||mode == OP_I||mode == OP_AI){
                         
-			    if(mode == LS_I||mode == LS_AI){
+			    if(mode == OP_I||mode == OP_AI){
                             printf("%llu ", direntp->d_ino);
                         }
 
                         printf("%s\t", direntp->d_name);
                     }
-                    else if(mode == LS_R){
+                    else if(mode == OP_R){
 
                         if(S_ISDIR(info.st_mode)){
                             printf("%s   ", direntp->d_name);
@@ -154,12 +154,12 @@ void do_ls(char dirname[],int mode){
             }
 	    printf("\n");
 
-            if(mode == LS_R){
+            if(mode == OP_R){
                 int i=0;
                 printf("\n");
                 for(;i<dir_count;i++){
                     printf("%s:\n", dirs[i]);
-                    do_ls(dirs[i],LS_R);
+                    do_ls(dirs[i],OP_R);
                     printf("\n");
                 }
             }
@@ -174,16 +174,16 @@ void do_ls(char dirname[],int mode){
 int analyzeParam(char* input){
     if(strlen(input)==2)
     {
-        if(input[1]=='l') return LS_L;
-        if(input[1]=='a') return LS_A;
-        if(input[1]=='d') return LS_D;
-        if(input[1]=='R') return LS_R;
-        if(input[1]=='i') return LS_I;
+        if(input[1]=='l') return OP_L;
+        if(input[1]=='a') return OP_A;
+        if(input[1]=='d') return OP_D;
+        if(input[1]=='R') return OP_R;
+        if(input[1]=='i') return OP_I;
     }
     else if(strlen(input)==3)
     {
-        if(input[1]=='a'&& input[2]=='l') return LS_AL;
-        if(input[1]=='a'&& input[2]=='i') return LS_AI;
+        if(input[1]=='a'&& input[2]=='l') return OP_AL;
+        if(input[1]=='a'&& input[2]=='i') return OP_AI;
     }
     return -1;
 }
@@ -191,11 +191,11 @@ int analyzeParam(char* input){
 int fonctionls_main(int ac,char* av[]){
 
     if(ac == 1){
-        do_ls(".",LS_NONE);
+        do_ls(".",OP_NONE);
     }
     else{
-        int mode = LS_NONE; // ls without option
-        int have_file_param = 0; // make sure if it has the paramater
+        int mode = OP_NONE; // ls sans option 
+        int have_file_param = 0;
 
         while(ac>1){
             ac--;
@@ -222,6 +222,7 @@ int fonctionls_main(int ac,char* av[]){
             do_ls(".",mode);
         }
         
-    }     
+    }   
+  	return 1;  
 }
 

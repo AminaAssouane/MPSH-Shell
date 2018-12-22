@@ -1,46 +1,33 @@
 #include "mkdir.h"
-/**
- *  \function MakeDir
- *  \author PengWeizhe
- *  \date 
- *  \param [in] path the path need to creat
- *  \return 0 ok 1 failed
- *  \details make a multiple dir
- */
-int makeDir(const char* path){
-    int beginCmpPath;
-    int endCmpPath;
+
+int make_Dir(const char* path){
+    int bgPath;
+    int endPath;
     int fullPathLen;
     int pathLen = strlen(path);
     char currentPath[128] = {0};
-    char fullPath[128] = {0};
 
     printf("path = %s\n", path);
     if('/' != path[0]){   
-        //get the gurrent path
-        getcwd(currentPath, sizeof(currentPath));
-        strcat(currentPath, "/");
-        printf("currentPath = %s\n", currentPath);
-        beginCmpPath = strlen(currentPath);
-        strcat(currentPath, path);
+	    getcwd(currentPath, sizeof(currentPath));
+	    strcat(currentPath, "/");
+	    printf("currentPath = %s\n", currentPath);
+	    bgPath = strlen(currentPath);
+	    strcat(currentPath, path);
+	    if(path[pathLen] != '/'){
+            	strcat(currentPath, "/");
+	    }
+	    endPath = strlen(currentPath);
+    }
+    else{
+        strcpy(currentPath, path);
         if(path[pathLen] != '/'){
             strcat(currentPath, "/");
         }
-        endCmpPath = strlen(currentPath);
-        
+        bgPath = 1;
+        endPath = strlen(currentPath);
     }
-    else{
-        int pathLen = strlen(path);
-        strcpy(currentPath, path);
-        if(path[pathLen] != '/')
-        {
-            strcat(currentPath, "/");
-        }
-        beginCmpPath = 1;
-        endCmpPath = strlen(currentPath);
-    }
-    //make a child dir
-    for(int i = beginCmpPath; i < endCmpPath ; i++ ){
+    for(int i = bgPath; i < endPath ; i++ ){
         if('/' == currentPath[i])
         {
             currentPath[i] = '\0';
@@ -56,14 +43,6 @@ int makeDir(const char* path){
             currentPath[i] = '/';
         }
     }
-    return 0;
+    return 1;
 }
-/*
-int main(int argc, char* argv[]){
-    //makeDir("helloworld");
-    if(argc >=2 ){
-    	makeDir(argv[1]);
-    }
-    return 0;
-}
-*/
+

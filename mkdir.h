@@ -3,4 +3,4 @@
 #include <string.h>
 #include <sys/stat.h>
 
-int makeDir(const char* path);
+int make_Dir(const char* path);
