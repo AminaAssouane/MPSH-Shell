@@ -1,4 +1,3 @@
-alias a=echo
 alias b=cd
 alias c=ls
 alias d=history
@@ -10,3 +9,4 @@ alias i=alias
 alias j=unalias
 alias k=cat
 alias l=umask
+alias a=ls
