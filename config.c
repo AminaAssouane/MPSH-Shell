@@ -1,19 +1,20 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include "mpsh.h"
 
 
 int main(){
 
+	char username[80];
 	char currentPath[80];
 	getcwd(currentPath,sizeof(currentPath));
 
+	char filename[100] = "/home/";
+	struct passwd * pwd = getpwuid(getuid());
+	strcpy(username, pwd->pw_name);
 
-	const char *filename = "/home/yuchen/.bash_profile";
+	const char * bash_name = "/.bash_profile";
+	strcat(filename,username);
+	strcat(filename,bash_name);
+
 	int p = open(filename,O_WRONLY | O_APPEND,0766);
 	
 	if(p!=-1){

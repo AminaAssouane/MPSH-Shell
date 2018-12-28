@@ -29,6 +29,9 @@
 #define TRUE 1
 #define SHELL_BUFFER  64
 #define SIZE 1024
-//int main_ls(int argc, char** argv);
+//extern char alias_path1[128];
+//extern char alias_path2[128];
+
+//extern char* path_alias_txt(char* filename);
 
 #endif  //fin de fichier "mpsh.h"
