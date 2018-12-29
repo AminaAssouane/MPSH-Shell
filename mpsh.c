@@ -217,7 +217,7 @@ short isAlias(char *comm, char *unalias){
 void alias(char* comm,char* alias_path1,char* alias_path2){
 	if (comm == NULL){
     	//int fd = open("mpsh_aliases.txt", O_RDONLY | O_CREAT);
-    	int fd = open(alias_path1, O_RDONLY | O_CREAT,0644);
+    	int fd = open(alias_path1, O_RDONLY | O_CREAT);
 
 	close(fd);
 	cat(alias_path1);
@@ -316,10 +316,10 @@ char * path_alias_txt(char* filename){
 
 int estAlias(char *comm,char* alias_path1,char* alias_path2){
 	//int f = open("mpsh_aliases.txt", O_RDONLY );
-	int f = open("mpsh_aliases.txt", O_RDONLY );
+	int f = open(alias_path1, O_RDONLY );
 
-	if(f==-1)
-		printf("impossible d'ouvrir le fichier\n");
+	//if(f==-1)
+		//printf("impossible d'ouvrir le fichier\n");
 	int i=0,j=0,k=0;
 	char c=read(f,&c,1);
 	char prec;
@@ -433,13 +433,14 @@ int ajoutExp(char* s,char ** e,int nbexp){
 	int j=0;
 	char *tmp=malloc(SIZE*sizeof(char));
 	for (i=0;i<nbexp;i++){
-		while(e[i][j]!='='){
+		while(e[i][j]!='=' && e[i][j]!='\0'){
 			tmp[j]=e[i][j];
 			j++;
 		}
-		if(strncmp(s,tmp,j)==0){
+		if(e[i][j]=='=' && strncmp(s,tmp,j)==0){
 			return i;
-		}
+		}else
+			return -2;
 	}
 	return -1;
 }
@@ -476,6 +477,13 @@ char * parcoursexp(char *s,char ** e,int nbexp){
 	tmp2="Pas de export trouver !";
 	return tmp2;
 }
+//redirection
+int erreur(char * err)
+{
+    write(2, err, strlen(err));
+    return 1;
+}
+
 
 void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char **exp,int nbexp,char **ali,int nbali,char* alias_path1,char* alias_path2){
 	char * res=malloc(SIZE*sizeof(char));
@@ -586,6 +594,43 @@ void addCurrentPathToRc(){
 	close(p);
 }
 
+int redirection(char *dir,char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char **exp,int nbexp,char **ali,int nbali,char* alias_path1,char* alias_path2)
+{
+	int t = type(command[0],alias_path1,alias_path2);
+	int nbarg=nbargs(command);
+	pid_t fils=fork();
+    if(fils==0){
+   		int file = open(dir, O_CREAT|O_WRONLY, 0666);
+    	if(file == -1)
+    	{
+        // En cas d'erreur
+      	  erreur("Erreur : open\n");
+    	}
+ 	
+    // On redirige 1 vers file
+    	dup2(file,1);
+ 
+    	close(file);
+    // On execute parse (pour le momment que les commandes internes)
+    	if (t==0){
+    		parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
+    	}else if(strcmp(command[0], "ls")==0){
+				fonctionls_main(nbarg,command);				
+		}else if(strcmp(command[0],"cat")==0){
+			if(nbarg>2){
+				cat_n(nbarg,command);
+			}else{
+				cat(command[1]);
+			}
+		}else if (strcmp(command[0],"mkdir")==0){
+			make_Dir(command[1]);
+		}
+    	close(1);
+    	exit(1);
+    }
+    return 1;
+}
+
 void proc(){
 	int nbcom=0;
 	char ** h= malloc(SIZE*sizeof(char*));
@@ -599,7 +644,10 @@ void proc(){
 	pid_t child_pid;
 	int stat_loc;
 	char res[SHELL_BUFFER];
-	
+	char * vague = malloc(SIZE*sizeof(char));
+	char * home = "/home/";
+	strcpy(vague,home);
+	strcat(vague,getenv("USER"));
 	char * alias_path1 = path_alias_txt("/mpsh_alias");
 	char * alias_path2 = path_alias_txt("/newal");
 
@@ -608,6 +656,17 @@ void proc(){
 		make_prompt();
 		command = read_input(readline("~s "));
 		nbarg=nbargs(command);
+		for (int cmp=0;cmp<nbarg;cmp++){
+			if (command[cmp][0]=='~'){
+				char * s=malloc(SIZE*sizeof(char));
+				strcpy(s,vague);
+				for(int i=1;i<strlen(command[cmp]);i++){	
+					s[strlen(vague)+(i-1)]=command[cmp][i];
+				}
+				s[strlen(vague)+strlen(command[cmp])-1]='\0';
+				command[cmp]=s;
+			}
+		}
 
 		if(!command[0]){				//get_input ne marche pas, alors on arête
 			free(command);
@@ -626,14 +685,31 @@ void proc(){
 		}
 		h[(nbcom-1)]=tmp;
 
+
+		for (int cmp=1;cmp<nbarg;cmp++){
+			if(command[cmp][0]=='>'){
+				char * tmp = malloc(SIZE*sizeof(char));
+				char * dir = command[cmp+1];
+				for(int cmp2=0;cmp2<nbarg;cmp2++){
+					if(strcmp(command[cmp2],">")!=0){
+						if(cmp2==0)
+							strcpy(tmp,command[cmp2]);
+						else
+							tmp=concat(tmp,command[cmp2]);
+					}else 
+						break;
+
+				}
+				free(command);
+				command=read_input(tmp);
+				redirection(dir,command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
+			}
+		}
+
+
+
 		if(strcmp(command[0], "cd") == 0){
-			if(strcmp(command[1],"~")==0){
-				char * tmp="/home/";
-				char * result= malloc(strlen(tmp)+strlen(getenv("USER"))+1);
-				strcpy(result,tmp);
-				strcat(result,getenv("USER"));
-				cd(result);
-			}else if(cd(command[1])<0){
+			if(cd(command[1])<0){
 				perror(command[1]);
 			}
 		}else if(command[0][0]=='$'){
@@ -658,10 +734,11 @@ void proc(){
 			int i=ajoutExp(command[0],ali,nbali);
 			if(i>=0)
 					ali[i]=command[0];
-				else{
+				else if (i==-1){
 					ali[nbali]=command[0];
 					nbali++;
-				}
+				}else
+					printf("Ne peut pas être parser\n");
 				exportN(ali,nbali);
 		}else if (strcmp(command[0], "exit") == 0){
 			exit(0);
@@ -705,10 +782,11 @@ void proc(){
 				int i = ajoutExp(command[1],exp,nbexp);
 				if(i>=0)
 					exp[i]=command[1];
-				else{
+				else if (i==-1){
 					exp[nbexp]=command[1];
 					nbexp++;
-				}
+				}else
+					printf("Ne peut pas être un export\n");					
 			}
 		}
 
