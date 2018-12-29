@@ -652,7 +652,7 @@ void proc(){
 	char * alias_path2 = path_alias_txt("/newal");
 
 	while(TRUE){
-
+		int d=0;
 		make_prompt();
 		command = read_input(readline("~s "));
 		nbarg=nbargs(command);
@@ -703,16 +703,17 @@ void proc(){
 				free(command);
 				command=read_input(tmp);
 				redirection(dir,command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
+				d++;
 			}
 		}
 
 
 
-		if(strcmp(command[0], "cd") == 0){
+		if(strcmp(command[0], "cd") == 0 && d==0){
 			if(cd(command[1])<0){
 				perror(command[1]);
 			}
-		}else if(command[0][0]=='$'){
+		}else if(command[0][0]=='$' && d==0){
 			char * tmp=malloc(SIZE*sizeof(char));
 			char * tmp2=malloc(SIZE*sizeof(char));			
 			tmp=parcoursexp((command[0])+1,exp,nbexp);
@@ -722,6 +723,7 @@ void proc(){
 				free(command);
 				command=read_input(tmp);
 				parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
+				d++;
 			}else{
 				tmp=parcoursexp((command[0])+1,ali,nbali);
 				tmp2=resteDeLaCommande(command,1);
@@ -729,42 +731,58 @@ void proc(){
 				free(command);
 				command=read_input(tmp);
 				parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
+				d++;
 			}
-		}else if (egalecomm(command)==0){
+		}else if (egalecomm(command)==0 && d==0){
 			int i=ajoutExp(command[0],ali,nbali);
-			if(i>=0)
+			if(i>=0){
 					ali[i]=command[0];
+					d++;
+			}
 				else if (i==-1){
 					ali[nbali]=command[0];
 					nbali++;
-				}else
+					d++;
+				}else{
 					printf("Ne peut pas être parser\n");
-				exportN(ali,nbali);
-		}else if (strcmp(command[0], "exit") == 0){
+					d++;
+				}
+		}else if (strcmp(command[0], "exit") == 0 && d==0){
 			exit(0);
-		}else if(strcmp(command[0], "pwd") == 0){
+			d++;
+		}else if(strcmp(command[0], "pwd") == 0 && d==0){
 			printf("%s\n", pwd());
-		}else if(strcmp(command[0], "echo")==0){
+			d++;
+		}else if(strcmp(command[0], "echo")==0 && d==0){
 			if(command[1][0]=='$'){
 				char * tmp=malloc(SIZE*sizeof(char));
 				tmp=concat(parcoursexp((command[1])+1,exp,nbexp),(resteDeLaCommande(command,2)));
 				printf("%s\n", tmp);
-			}else
+				d++;
+			}else{
 				my_echo(nbarg,command);
-		}else if(strcmp(command[0], "umask")==0){
+				d++;
+			}
+		}else if(strcmp(command[0], "umask")==0 && d==0){
 			my_umask(nbarg,command);
-		}else if(strcmp(command[0], "history")==0){
+			d++;
+		}else if(strcmp(command[0], "history")==0 && d==0){
 			history(nbarg,command,h,nbcom);
-		}else if(strcmp(command[0],"alias")==0){
+			d++;
+		}else if(strcmp(command[0],"alias")==0 && d==0){
 			my_alias(nbarg,command,alias_path1,alias_path2);
-		}else if(strcmp(command[0],"unalias")==0){
+			d++;
+		}else if(strcmp(command[0],"unalias")==0 && d==0){
 			my_unalias(nbarg,command,alias_path1,alias_path2);
-		}else if(strcmp(command[0],"type")==0){
+			d++;
+		}else if(strcmp(command[0],"type")==0 && d==0){
 			int t = type(command[1],alias_path1,alias_path2);
 			if (t==2){
 				printf("%s est /bin/%s\n",command[1],command[1]);
 			}
-		}else if(AliasComp(command[0],res,alias_path1,alias_path2)==1){
+			d++;
+		}else if(AliasComp(command[0],res,alias_path1,alias_path2)==1 && d==0){
+			d++;
 			char * tmp=res;
 			for (int i=1;i<nbarg;i++){
 				tmp=concat(tmp,command[i]);
@@ -773,7 +791,8 @@ void proc(){
 			command=read_input(tmp);
 			parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
 			
-		}else if(strcmp(command[0],"export")==0){
+		}else if(strcmp(command[0],"export")==0 && d==0){
+			d++;
 			if(nbarg!=2){
 				printf("Mauvais nombre d'argument\n");
 			}else if (strcmp(command[1],"-n")==0){
@@ -798,15 +817,18 @@ void proc(){
 		}
 		
 		if(child_pid == 0){
-			if(strcmp(command[0], "ls")==0){
+			if(strcmp(command[0], "ls")==0 && d==0){
+				d++;
 				fonctionls_main(nbarg,command);				
-			}else if(strcmp(command[0],"cat")==0){
+			}else if(strcmp(command[0],"cat")==0 && d==0){
+				d++;
 				if(nbarg>2){
 					cat_n(nbarg,command);
 				}else{
 					cat(command[1]);
 				}
-			}else if (strcmp(command[0],"mkdir")==0){
+			}else if (strcmp(command[0],"mkdir")==0 && d==0){
+				d++;
 				make_Dir(command[1]);
 			}
 			exit(1);
@@ -814,6 +836,9 @@ void proc(){
 		}else{
 			waitpid(child_pid, &stat_loc, WUNTRACED);
 		}
+		if(d==0)
+			erreur("Erreur: commande inconnue\n");
+		d=0;
 		free(command);
 	}
 }
