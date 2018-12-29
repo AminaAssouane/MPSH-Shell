@@ -128,11 +128,11 @@ void my_echo (int argv,char ** argc){
 //Ce qui provoque l'effacement dans le fichier
 void unalias(char *comm,char* alias_path1, char* alias_path2){
 	//int fd = open("mpsh_aliases.txt",O_RDWR | O_CREAT);
-  	int fd = open(alias_path1,O_RDWR | O_CREAT);
+  	int fd = open(alias_path1,O_RDWR | O_CREAT,0777);
 
 	if (fd != -1){
    		//int fdnew = open("newal.txt",O_RDWR | O_CREAT);
-		int fdnew = open(alias_path2,O_RDWR | O_CREAT);
+		int fdnew = open(alias_path2,O_RDWR | O_CREAT,0777);
 
     	char newcom[50] = "alias ";
     	char c;
@@ -217,7 +217,7 @@ short isAlias(char *comm, char *unalias){
 void alias(char* comm,char* alias_path1,char* alias_path2){
 	if (comm == NULL){
     	//int fd = open("mpsh_aliases.txt", O_RDONLY | O_CREAT);
-    	int fd = open(alias_path1, O_RDONLY | O_CREAT);
+    	int fd = open(alias_path1, O_RDONLY | O_CREAT , 0777);
 
 	close(fd);
 	cat(alias_path1);
@@ -305,13 +305,13 @@ int egalecomm(char **comm){
 	return -1;
 }
 
-char * path_alias_txt(char* filename){	
+void path_alias_txt(char* filename, char* dest){	
 	char filePath[256];
-	getcwd(filePath,sizeof(filePath));
-	strcat(filePath,filename);
-	printf("%s\n", filePath);
-
-	return filePath;
+	getcwd(dest,128);
+	strcat(dest,filename);
+	printf("%s\n", dest);
+	
+	//return filePath;
 }
 
 int estAlias(char *comm,char* alias_path1,char* alias_path2){
@@ -360,7 +360,7 @@ int estAlias(char *comm,char* alias_path1,char* alias_path2){
 
 int AliasComp(char *comm, char * fin, char* alias_path1, char* alias_path2){
 	//int f = open("mpsh_aliases.txt", O_RDONLY );
-	int f = open(alias_path1, O_RDONLY );
+	int f = open(alias_path1, O_RDONLY, 0777 );
 
 	if(f==-1)
 		printf("impossible d'ouvrir le fichier\n");
@@ -600,7 +600,7 @@ int redirection(char *dir,char ** command,char ** h,int nbcom,pid_t child_pid,in
 	int nbarg=nbargs(command);
 	pid_t fils=fork();
     if(fils==0){
-   		int file = open(dir, O_CREAT|O_WRONLY, 0666);
+   		int file = open(dir, O_CREAT|O_WRONLY, 0777);
     	if(file == -1)
     	{
         // En cas d'erreur
@@ -648,9 +648,15 @@ void proc(){
 	char * home = "/home/";
 	strcpy(vague,home);
 	strcat(vague,getenv("USER"));
-	char * alias_path1 = path_alias_txt("/mpsh_alias");
-	char * alias_path2 = path_alias_txt("/newal");
 
+	
+	char alias_path1[128];
+       	path_alias_txt("/mpsh_alias",alias_path1);
+	char alias_path2[128];
+       	path_alias_txt("/newal",alias_path2);
+
+	printf("%s \n", alias_path1);
+	printf("%s \n", alias_path2);
 	while(TRUE){
 		int d=0;
 		make_prompt();
