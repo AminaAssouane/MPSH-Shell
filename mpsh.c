@@ -126,13 +126,13 @@ void my_echo (int argv,char ** argc){
 }
 
 //Ce qui provoque l'effacement dans le fichier
-void unalias(char *comm,char* alias_path1, char* alias_path2){
+/*void unalias(char *comm){
 	//int fd = open("mpsh_aliases.txt",O_RDWR | O_CREAT);
-  	int fd = open(alias_path1,O_RDWR | O_CREAT,0777);
+  	//int fd = open(alias_path1,O_RDWR | O_CREAT,0777);
 
-	if (fd != -1){
+	//if (fd != -1){
    		//int fdnew = open("newal.txt",O_RDWR | O_CREAT);
-		int fdnew = open(alias_path2,O_RDWR | O_CREAT,0777);
+	//	int fdnew = open(alias_path2,O_RDWR | O_CREAT,0777);
 
     	char newcom[50] = "alias ";
     	char c;
@@ -170,33 +170,33 @@ void unalias(char *comm,char* alias_path1, char* alias_path2){
     //remove("mpsh_aliases.txt");
     //rename("newal.txt","mpsh_aliases.txt");
     remove(alias_path1);
-    rename("newal","mpshrc");
+    rename("newal","mpsh_alias");
     if (bool == 0){
-      /*printf("\nAucun alias de ce nom.");*/
+      printf("\nAucun alias de ce nom.");
     }
 	} else {
     	printf("Erreur. Il n'y a aucun alias.\n");
   	}
-}
+}*/
 
 //Main de unalias
-int my_unalias(int argc, char * argv[], char* alias_path1,char* alias_path2){
+/*int my_unalias(int argc, char * argv[]){
   	if (argc < 2){
    		printf("Trop peu d'arguments pour la commande unalias.\n");
     	return 1;
   	} else {
     	if (argc == 2){
-      		unalias(argv[1],alias_path1,alias_path2);
+      		unalias(argv[1]);
       		return 1;
     	} else {
       		printf("Trop d'arguments pour la commande unalias.\n");
       		return 0;
     	}
   	}
-}
+}*/
 
 /* Fonction qui verifie si l'argument apres la commande alias est bien formaté */
-short isAlias(char *comm, char *unalias){ 
+/*short isAlias(char *comm, char *unalias){ 
 	int i = 0;
 	int size = strlen(comm); 
   	if (comm[0] == '='){
@@ -254,7 +254,7 @@ int my_alias(int argc, char ** argv, char* alias_path1,char* alias_path2){
      	 	return 0;
    		}
   	}
-}
+}*/
 
 
 int history(int argc,char ** argv,char *h [],int nbcom){
@@ -314,7 +314,7 @@ void path_alias_txt(char* filename, char* dest){
 	//return filePath;
 }
 
-int estAlias(char *comm,char* alias_path1,char* alias_path2){
+/*int estAlias(char *comm,char* alias_path1,char* alias_path2){
 	//int f = open("mpsh_aliases.txt", O_RDONLY );
 	int f = open(alias_path1, O_RDONLY );
 
@@ -356,59 +356,49 @@ int estAlias(char *comm,char* alias_path1,char* alias_path2){
 	}
 	close(f);
 	return 0;
-}
+}*/
 
-int AliasComp(char *comm, char * fin, char* alias_path1, char* alias_path2){
-	//int f = open("mpsh_aliases.txt", O_RDONLY );
-	int f = open(alias_path1, O_RDONLY, 0777 );
-
-	if(f==-1)
-		printf("impossible d'ouvrir le fichier\n");
-	int i=0,j=0,k=0;
-	char c=read(f,&c,1);
-	char prec;
-	char * s=malloc(SHELL_BUFFER*sizeof(char)); 
-	char * res=malloc(SHELL_BUFFER*sizeof(char));
-	while(c!=EOF){//Lors de ma boucle je ne trouve pas '\0', aucune idée de pourquoi
-		while (c!='\n'){
-	  		s[i]=c;
-	  		i++;
-	  		read(f,&c,1);
-		}
-		s[i]='\0';
-		while(s[j]!=' ')
-			j++;
-		j++;//Saut de l'espace
-		while(s[j]!='='){
-			res[k]=s[j];
-			k++;
+int AliasComp(char *comm, char * fin, char** ali, int nbali){
+	int i=0;
+	int j=0;
+	int k=0;
+	char * tmp=malloc(SIZE*sizeof(char));
+	while(k<=nbali-1){
+		fin[0]='\0';
+		while(ali[k][i]!=' ')
+			i++;
+		i++;		
+		while(ali[k][i]!='='){
+			tmp[j]=ali[k][i];
+			i++;
 			j++;
 		}
-		j++;//Saut de '='
-		i=0;
-		if(strcmp(comm,res)==0){
-			while(s[j]!='\0'){
-				fin[i]=s[j];
-				j++;
+		i++;
+		tmp[i]='\0';
+		if(strcmp(tmp,comm)==0){
+			int f=0;
+			while(i<strlen(ali[k])){
+				fin[f]=ali[k][i];
 				i++;
+				f++;
 			}
-			fin[i]='\0';
+			fin[f]='\0';
 			return 1;
 		}
-		prec=c;
-		read(f,&c,1);
-		if(prec==c)
-			return 0;
 		i=0;
 		j=0;
-		k=0;
+		tmp[i]='\0';
+		fin[i]='\0';
+		k++;
 	}
-	close(f);
-	return 0;
+	fin="Pas de alias trouver !";
+	return -1;
 }
 
+
+
 //type
-short type(char* command,char* alias_path1,char* alias_path2){
+short type(char* command){
 	char* cmdInterne[9] = {"cd", "exit", "pwd", "echo", "unmask", "history", "alias", "unalias","type"};
 	for(int i=0;i<9;i++){
 		if(strcmp(command,cmdInterne[i])==0){
@@ -416,8 +406,8 @@ short type(char* command,char* alias_path1,char* alias_path2){
 			return 0;
 		}
 	}
-	if(estAlias(command,alias_path1,alias_path2))
-		return 1;
+	/*if(estAlias(command))
+		return 1;*/
 	return 2;
 }
 //export
@@ -437,10 +427,8 @@ int ajoutExp(char* s,char ** e,int nbexp){
 			tmp[j]=e[i][j];
 			j++;
 		}
-		if(e[i][j]=='=' && strncmp(s,tmp,j)==0){
+		if(strncmp(s,tmp,j)==0)
 			return i;
-		}else
-			return -2;
 	}
 	return -1;
 }
@@ -485,20 +473,13 @@ int erreur(char * err)
 }
 
 
-void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char **exp,int nbexp,char **ali,int nbali,char* alias_path1,char* alias_path2){
+void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char **exp,int nbexp,char** eg,int nbeg,char **ali,int nbali){
 	char * res=malloc(SIZE*sizeof(char));
 	int nbarg=nbargs(command);
-	
 	if(strcmp(command[0], "cd") == 0){
-			if(strcmp(command[1],"~")==0){
-				char * tmp="/home/";
-				char * result= malloc(strlen(tmp)+strlen(getenv("USER"))+1);
-				strcpy(result,tmp);
-				strcat(result,getenv("USER"));
-				cd(result);
-			}else if(cd(command[1])<0){
+			if(cd(command[1])<0){
 				perror(command[1]);
-			}			
+			}
 		}else if(command[0][0]=='$'){
 			char * tmp=malloc(SIZE*sizeof(char));
 			char * tmp2=malloc(SIZE*sizeof(char));			
@@ -508,23 +489,25 @@ void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char
 				tmp=concat(tmp,tmp2);
 				free(command);
 				command=read_input(tmp);
-				parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
+				parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 			}else{
-				tmp[0]='\0';
-				tmp=parcoursexp((command[0])+1,ali,nbali);
+				tmp=parcoursexp((command[0])+1,eg,nbeg);
 				tmp2=resteDeLaCommande(command,1);
 				tmp=concat(tmp,tmp2);
 				free(command);
 				command=read_input(tmp);
-				parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
+				parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 			}
 		}else if (egalecomm(command)==0){
-			int i=ajoutExp(command[0],ali,nbali);
-			if(i>=0)
-					ali[i]=command[0];
-				else{
-					ali[nbali]=command[0];
-					nbali++;
+			int i=ajoutExp(command[0],eg,nbeg);
+			if(i>=0){
+					eg[i]=command[0];
+			}
+				else if (i==-1){
+					eg[nbeg]=command[0];
+					nbeg++;
+				}else{
+					printf("Ne peut pas être parser\n");
 				}
 		}else if (strcmp(command[0], "exit") == 0){
 			exit(0);
@@ -535,30 +518,41 @@ void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char
 				char * tmp=malloc(SIZE*sizeof(char));
 				tmp=concat(parcoursexp((command[1])+1,exp,nbexp),(resteDeLaCommande(command,2)));
 				printf("%s\n", tmp);
-			}else
+			}else{
 				my_echo(nbarg,command);
+			}
 		}else if(strcmp(command[0], "umask")==0){
 			my_umask(nbarg,command);
 		}else if(strcmp(command[0], "history")==0){
 			history(nbarg,command,h,nbcom);
 		}else if(strcmp(command[0],"alias")==0){
-			my_alias(nbarg,command,alias_path1,alias_path2);
-		}else if(strcmp(command[0],"unalias")==0){
-			my_unalias(nbarg,command,alias_path1,alias_path2);
+			if(nbarg==1){
+				exportN(ali,nbali);
+			}else{
+				int i = ajoutExp(command[1],ali,nbali);
+				if(i>=0)
+					ali[i]=command[1];
+				else if (i==-1){
+					ali[nbali]=command[1];
+					nbali++;
+				}					
+			}
+		/*}else if(strcmp(command[0],"unalias")==0 && d==0){
+			my_unalias(nbarg,command);
+			d++;*/
 		}else if(strcmp(command[0],"type")==0){
-			int t = type(command[1],alias_path1,alias_path2);
+			int t = type(command[1]);
 			if (t==2){
 				printf("%s est /bin/%s\n",command[1],command[1]);
 			}
-		}else if(AliasComp(command[0],res,alias_path1,alias_path2)==1){
+		}else if(AliasComp(command[0],res,ali,nbali)==1){
 			char * tmp=res;
 			for (int i=1;i<nbarg;i++){
 				tmp=concat(tmp,command[i]);
 			}
 			free(command);
 			command=read_input(tmp);
-			parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
-			
+			parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 		}else if(strcmp(command[0],"export")==0){
 			if(nbarg!=2){
 				printf("Mauvais nombre d'argument\n");
@@ -568,10 +562,11 @@ void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char
 				int i = ajoutExp(command[1],exp,nbexp);
 				if(i>=0)
 					exp[i]=command[1];
-				else{
+				else if (i==-1){
 					exp[nbexp]=command[1];
 					nbexp++;
-				}
+				}else
+					printf("Ne peut pas être un export\n");					
 			}
 		}
 	}
@@ -594,9 +589,9 @@ void addCurrentPathToRc(){
 	close(p);
 }
 
-int redirection(char *dir,char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char **exp,int nbexp,char **ali,int nbali,char* alias_path1,char* alias_path2)
+int redirection(char *dir,char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char **exp,int nbexp,char** eg,int nbeg,char **ali,int nbali)
 {
-	int t = type(command[0],alias_path1,alias_path2);
+	int t = type(command[0]);
 	int nbarg=nbargs(command);
 	pid_t fils=fork();
     if(fils==0){
@@ -613,7 +608,7 @@ int redirection(char *dir,char ** command,char ** h,int nbcom,pid_t child_pid,in
     	close(file);
     // On execute parse (pour le momment que les commandes internes)
     	if (t==0){
-    		parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
+    		parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
     	}else if(strcmp(command[0], "ls")==0){
 				fonctionls_main(nbarg,command);				
 		}else if(strcmp(command[0],"cat")==0){
@@ -636,8 +631,10 @@ void proc(){
 	char ** h= malloc(SIZE*sizeof(char*));
 	int nbexp = 0;
 	char ** exp = malloc(SIZE*sizeof(char*));
-	int nbali = 0; //Du type alias=commande
-	char ** ali = malloc(SIZE*sizeof(char*));
+	int nbeg = 0; //Du type alias=commande
+	char ** eg = malloc(SIZE*sizeof(char*));
+	int nbali=0;
+	char ** ali = malloc(SIZE*sizeof(char *));
 	int t=SIZE;
 	char **command;
 	int nbarg;
@@ -650,13 +647,6 @@ void proc(){
 	strcat(vague,getenv("USER"));
 
 	
-	char alias_path1[128];
-       	path_alias_txt("/mpsh_alias",alias_path1);
-	char alias_path2[128];
-       	path_alias_txt("/newal",alias_path2);
-
-	printf("%s \n", alias_path1);
-	printf("%s \n", alias_path2);
 	while(TRUE){
 		int d=0;
 		make_prompt();
@@ -708,7 +698,7 @@ void proc(){
 				}
 				free(command);
 				command=read_input(tmp);
-				redirection(dir,command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
+				redirection(dir,command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 				d++;
 			}
 		}
@@ -728,26 +718,25 @@ void proc(){
 				tmp=concat(tmp,tmp2);
 				free(command);
 				command=read_input(tmp);
-				parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
-				d++;
+				parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 			}else{
-				tmp=parcoursexp((command[0])+1,ali,nbali);
+				tmp=parcoursexp((command[0])+1,eg,nbeg);
 				tmp2=resteDeLaCommande(command,1);
 				tmp=concat(tmp,tmp2);
 				free(command);
 				command=read_input(tmp);
-				parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
+				parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 				d++;
 			}
 		}else if (egalecomm(command)==0 && d==0){
-			int i=ajoutExp(command[0],ali,nbali);
+			int i=ajoutExp(command[0],eg,nbeg);
 			if(i>=0){
-					ali[i]=command[0];
+					eg[i]=command[0];
 					d++;
 			}
 				else if (i==-1){
-					ali[nbali]=command[0];
-					nbali++;
+					eg[nbeg]=command[0];
+					nbeg++;
 					d++;
 				}else{
 					printf("Ne peut pas être parser\n");
@@ -776,27 +765,42 @@ void proc(){
 			history(nbarg,command,h,nbcom);
 			d++;
 		}else if(strcmp(command[0],"alias")==0 && d==0){
-			my_alias(nbarg,command,alias_path1,alias_path2);
 			d++;
-		}else if(strcmp(command[0],"unalias")==0 && d==0){
-			my_unalias(nbarg,command,alias_path1,alias_path2);
+			if(nbarg==1){
+				exportN(ali,nbali);
+			}else if (nbarg==2){
+				char * tmp = malloc(SIZE*sizeof(char));
+				strcpy(tmp,command[0]);
+				tmp=concat(tmp,command[1]);
+				printf("%s\n",tmp);
+				int i = ajoutExp(tmp,ali,nbali);
+				printf("%d\n",i);
+				if(i>=0)
+					ali[i]=tmp;
+				else if (i==-1){
+					ali[nbali]=tmp;
+					nbali++;
+				}					
+			}else
+				printf("Trop d'arguments pour alias\n");
 			d++;
+		/*}else if(strcmp(command[0],"unalias")==0 && d==0){
+			my_unalias(nbarg,command);
+			d++;*/
 		}else if(strcmp(command[0],"type")==0 && d==0){
-			int t = type(command[1],alias_path1,alias_path2);
+			int t = type(command[1]);
 			if (t==2){
 				printf("%s est /bin/%s\n",command[1],command[1]);
 			}
 			d++;
-		}else if(AliasComp(command[0],res,alias_path1,alias_path2)==1 && d==0){
-			d++;
+		}else if(AliasComp(command[0],res,ali,nbali)==1){
 			char * tmp=res;
 			for (int i=1;i<nbarg;i++){
 				tmp=concat(tmp,command[i]);
 			}
 			free(command);
 			command=read_input(tmp);
-			parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,ali,nbali,alias_path1,alias_path2);
-			
+			parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 		}else if(strcmp(command[0],"export")==0 && d==0){
 			d++;
 			if(nbarg!=2){
