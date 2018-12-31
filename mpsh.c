@@ -779,7 +779,13 @@ void proc(){
 				}
 			}else if (strcmp(command[0],"mkdir")==0 && d==0){
 				d++;
-				make_Dir(command[1]);
+				if(nbarg == 2){
+					make_Dir(command[1]);
+				}else if(nbarg == 3 && strcmp(command[1],"-p")==0){
+					printf("plusiers dirs");
+					make_Dir(command[2]);
+					//make_plu_Dirs(command[2]);
+				}
 			}
 			exit(1);
 			printf("main : execvp failed \n");

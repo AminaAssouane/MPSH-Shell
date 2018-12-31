@@ -3,4 +3,6 @@
 #include <string.h>
 #include <sys/stat.h>
 
-int make_Dir(const char* path);
+int make_Dir(char* path);
+int makedirs(char * path);
+int make_plu_Dirs(char* path);
