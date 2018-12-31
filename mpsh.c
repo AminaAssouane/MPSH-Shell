@@ -402,10 +402,61 @@ short type(char* command){
 		return 1;*/
 	return 2;
 }
+
+int AliasCompare(char** command, char*c ,char** ali,int nbali){
+
+	if(nbali==0){
+		return -1;
+	}
+
+	if(!isCommande){
+		command[0] = parcoursexp(c,ali,nbali);
+		return 1;
+	}
+
+	//command[0] = parcoursexp(c,ali,nbali);
+	return 2;
+
+	//int len=sizeof(c)/sizeof(char);
+	/*
+	for(int i=0;i<nbali;i++){
+		if(srtncmp(c,ali[i],len)==0){
+			
+			command[0] = parcoursexp(c)
+
+			
+			int len1 = sizeof(ali[i])/sizeof(char);
+			char * tmp = malloc(sizeof(char)*64);
+			int h=0;
+			for(int j=0;j<len1;j++){
+				if(ali[i][j] == '='){
+			}
+			
+			return 1;
+		}
+	}
+*/
+}
+
+int unalias(char** ali, int nbali,char* cmd){
+	int len=sizeof(cmd)/sizeof(char);
+	int h;
+	for(int j=0;j<nbali;j++){
+		if(strncmp(ali[j],cmd,len)){
+			ali[j] = NULL;
+			return 1;
+		}
+	}
+
+	printf("%s n'est pas in commande alias\n", cmd);	
+	return -1;
+}
+
 //export
 void exportN(char ** e,int nbexp){
 	int i;
 	for (i=0;i<nbexp;i++){
+		printf("alias ");
 		printf("%s\n",e[i]);
 	}
 }
