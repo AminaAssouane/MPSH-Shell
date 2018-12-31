@@ -395,8 +395,6 @@ int AliasComp(char *comm, char * fin, char** ali, int nbali){
 	return -1;
 }
 
-
-
 //type
 short type(char* command){
 	char* cmdInterne[9] = {"cd", "exit", "pwd", "echo", "unmask", "history", "alias", "unalias","type"};
@@ -525,7 +523,10 @@ void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char
 			my_umask(nbarg,command);
 		}else if(strcmp(command[0], "history")==0){
 			history(nbarg,command,h,nbcom);
-		}else if(strcmp(command[0],"alias")==0){
+		}else if(strcmp(command[0],"alias")){
+
+			printf("alias dans le proc je dans le proc je ne le fais pass" );
+		/*else if(strcmp(command[0],"alias")==0){
 			if(nbarg==1){
 				exportN(ali,nbali);
 			}else{
@@ -537,7 +538,7 @@ void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char
 					nbali++;
 				}					
 			}
-		/*}else if(strcmp(command[0],"unalias")==0 && d==0){
+		}else if(strcmp(command[0],"unalias")==0 && d==0){
 			my_unalias(nbarg,command);
 			d++;*/
 		}else if(strcmp(command[0],"type")==0){
@@ -626,6 +627,35 @@ int redirection(char *dir,char ** command,char ** h,int nbcom,pid_t child_pid,in
     return 1;
 }
 
+int alias(char ** ali,char * tmp){
+	if (ali==NULL){
+		return -1;
+	}
+	
+	for(int i=0;i<SIZE;i++){
+		if(ali[i]==NULL){
+			ali[i] = tmp;
+			return 1;
+		}
+		if (i==(SIZE-1)){
+			printf("ali is full");
+		}
+	}
+
+	return -1;
+}
+
+void show_alias(char ** ali){
+	if(ali==NULL){
+		printf("char ** ali est null");
+	}
+
+	int len = sizeof(ali)/sizeof(ali[0]);
+	for(int i=0;i<len;i++){
+		printf("%s\n",ali[i]);
+	}
+}
+
 void proc(){
 	int nbcom=0;
 	char ** h= malloc(SIZE*sizeof(char*));
@@ -634,7 +664,6 @@ void proc(){
 	int nbeg = 0; //Du type alias=commande
 	char ** eg = malloc(SIZE*sizeof(char*));
 	int nbali=0;
-	char ** ali = malloc(SIZE*sizeof(char *));
 	int t=SIZE;
 	char **command;
 	int nbarg;
@@ -645,13 +674,18 @@ void proc(){
 	char * home = "/home/";
 	strcpy(vague,home);
 	strcat(vague,getenv("USER"));
-
 	
+	char ** ali = malloc(SIZE*sizeof(char*));
+	if(ali==NULL){
+		printf("ali est dans le proc nulli avant while");
+	}	
+
 	while(TRUE){
 		int d=0;
 		make_prompt();
 		command = read_input(readline("~s "));
 		nbarg=nbargs(command);
+
 		for (int cmp=0;cmp<nbarg;cmp++){
 			if (command[cmp][0]=='~'){
 				char * s=malloc(SIZE*sizeof(char));
@@ -703,8 +737,6 @@ void proc(){
 			}
 		}
 
-
-
 		if(strcmp(command[0], "cd") == 0 && d==0){
 			if(cd(command[1])<0){
 				perror(command[1]);
@@ -733,15 +765,14 @@ void proc(){
 			if(i>=0){
 					eg[i]=command[0];
 					d++;
+			}else if (i==-1){
+				eg[nbeg]=command[0];
+				nbeg++;
+				d++;
+			}else{
+				printf("Ne peut pas être parser\n");
+				d++;
 			}
-				else if (i==-1){
-					eg[nbeg]=command[0];
-					nbeg++;
-					d++;
-				}else{
-					printf("Ne peut pas être parser\n");
-					d++;
-				}
 		}else if (strcmp(command[0], "exit") == 0 && d==0){
 			exit(0);
 			d++;
@@ -764,7 +795,24 @@ void proc(){
 		}else if(strcmp(command[0], "history")==0 && d==0){
 			history(nbarg,command,h,nbcom);
 			d++;
-		}else if(strcmp(command[0],"alias")==0 && d==0){
+		}else if(strcmp(command[0], "helpme")==0){
+			printf("can't help you !\n");
+		}else if(strcmp(command[0], "alias")==0 && d==0){
+				
+			printf("hahahaha");
+			if(nbarg==1){
+				show_alias(ali);
+			}else if(nbarg==2){
+				if((alias(ali,command[1]))<0){
+					printf("Erreur : alias dans le proc\n");
+				}
+			}else{
+				printf("Trop de arguments");
+			}
+
+			d++;
+		}		
+		/*else if(strcmp(command[0],"alias")==0 && d==0){
 			d++;
 			if(nbarg==1){
 				exportN(ali,nbali);
@@ -783,24 +831,17 @@ void proc(){
 				}					
 			}else
 				printf("Trop d'arguments pour alias\n");
+		}*/
+		else if(strcmp(command[0],"unalias")==0 && d==0){
+			//my_unalias(nbarg,command);
+			printf("unalias ne marche pas");
 			d++;
-		/*}else if(strcmp(command[0],"unalias")==0 && d==0){
-			my_unalias(nbarg,command);
-			d++;*/
 		}else if(strcmp(command[0],"type")==0 && d==0){
 			int t = type(command[1]);
 			if (t==2){
 				printf("%s est /bin/%s\n",command[1],command[1]);
 			}
 			d++;
-		}else if(AliasComp(command[0],res,ali,nbali)==1){
-			char * tmp=res;
-			for (int i=1;i<nbarg;i++){
-				tmp=concat(tmp,command[i]);
-			}
-			free(command);
-			command=read_input(tmp);
-			parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 		}else if(strcmp(command[0],"export")==0 && d==0){
 			d++;
 			if(nbarg!=2){
@@ -817,6 +858,15 @@ void proc(){
 				}else
 					printf("Ne peut pas être un export\n");					
 			}
+		}
+		else if(AliasComp(command[0],res,ali,nbali)==1){ //ne marche pas maintenant
+			char * tmp=res;
+			for (int i=1;i<nbarg;i++){
+				tmp=concat(tmp,command[i]);
+			}
+			free(command);
+			command=read_input(tmp);
+			parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 		}
 
 		child_pid = fork();
