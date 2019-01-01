@@ -1,7 +1,7 @@
 
 # INVITE #
 ######################################
-INVITE='acd default ~$'
+INVITE='acd mickael ~$'
 
 # $H : hostname
 # $P : pathname
