@@ -49,7 +49,7 @@ void make_prompt1(){
 	fflush(stdout);					//renouvoler espace
 }
 
-void make_prompt(){
+void make_prompt(char * pathCons){
 	char pathname[SHELL_BUFFER];
 	char username[SHELL_BUFFER];
 	char hostname[SHELL_BUFFER];
@@ -60,30 +60,31 @@ void make_prompt(){
 	memset(pathname, 0, sizeof(pathname));
 	getcwd(pathname, sizeof(pathname));		//obtenir l'adresse actuel
 
-
-	char res[1024];
-	char *dest = malloc(sizeof(char)*1024);
-	char filename[] = "mpshrc";
+	char *res = malloc(sizeof(char)*512);
+	char *dest = malloc(sizeof(char)*512);
+	char * filename = pathCons;
 	FILE *fp;
 	if((fp=fopen(filename,"r"))==NULL){
 		printf("Erreur : make_prompt openfile! \n");
 	}
 	while(!feof(fp)){
 		fgets(res,1024,fp);
-		//printf("%s\n", res);
 		if(strncmp(res,"INVITE='",8)==0){
-			//printf("duitou\n");
-			strcat(dest,res+8);
+			//printf("res : %s",res);
+			//printf("len res%d \n",strlen(res));
+			memmove(dest,res+8,strlen(res)-8);
+			//printf("NO 11 dest : %s\n", dest);
 			break;
 		}
 	}
 
 	int len = strlen(dest);
-	dest[len-2] = '\0';
+	dest[len-1] = '\0';
+	dest[len-4] = '\0';
 	//dest[len-1] = '\0';
-	//printf("dest len: %d ",len);
-	char tmp[1024];
-	//int lent=0;
+	
+	//printf("dest: %s ",dest);
+	char *tmp =malloc(sizeof(char)*1024);
 	for(int i=0;i<len-2;i++){
 		if(dest[i]=='$'){ //des options de INVITE
 			if(dest[i+1]=='H'){
@@ -103,22 +104,21 @@ void make_prompt(){
 			}
 			
 		}else{
-			//printf("%c \n",dest[i]);
 			tmp[strlen(tmp)] = dest[i];
 		}
 	}	
-	//printf("%s\n", tmp);
+	//printf("tmp :%s\n", tmp);
 	tmp[strlen(tmp)] = '\0';
-	dest = tmp+4;
+	tmp[strlen(tmp)-1] = '\0';
+	dest = tmp;
 	if(dest != NULL){
 		printf("%s",dest);
-		fflush(stdout);					//renouvoler espace
+		fflush(stdout);				//renouvoler espace
 	}else{
 		printf("[%s-%s-%s]~$",username,hostname,pathname);
 		
 		fflush(stdout);					//renouvoler espace
 	}
-
 }
 
 
@@ -496,14 +496,13 @@ void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char
 			command=read_input(tmp);
 			parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 		}
-	}
+}
 
 
 void addCurrentPathToRc(){
 
 	char currentPath[80];
 	getcwd(currentPath,sizeof(currentPath));
-
 
 	const char *filename = "currentPath/abc";
 	int p = open(filename, O_APPEND);
@@ -645,9 +644,14 @@ void proc(){
 		printf("ali est dans le proc nulli avant while");
 	}	
 
+	char path[SHELL_BUFFER];
+	memset(path, 0, sizeof(path));
+	getcwd(path, sizeof(path));
+	strcat(path,"/mpshrc");
+	printf("path : %s\n", path);
 	while(TRUE){
 		int d=0;
-		make_prompt();
+		make_prompt(path);
 		command = read_input(readline(" "));
 		nbarg=nbargs(command);
 
