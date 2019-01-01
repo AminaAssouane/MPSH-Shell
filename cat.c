@@ -1,6 +1,6 @@
 #include "cat.h"
  
-void cat(char *path){
+int cat(char *path){
   struct stat statbuf;
   stat(path,&statbuf);;
   if (S_ISREG(statbuf.st_mode)){
@@ -15,19 +15,23 @@ void cat(char *path){
       if (r < 0){
 	printf("Erreur.");
 	exit(-1);
+	return-1;
       }
       close(fd);
     }
     else{
       printf("Le fichier n'existe pas.");
       exit(-1);
+      return -1;
     }
   }
   else {
     printf("Erreur. Le chemin que vous avez mentionne n'est pas un fichier.");
     exit(-1);
+    return -1;
   }
   printf("\n");
+  return 1;
 }
 
 
@@ -74,7 +78,7 @@ int lgEntier(int n){
 	return cp;
 }
 
-void cat_n(int argc, char* argv[]){
+int cat_n(int argc, char* argv[]){
 
 	const char *filename = argv[2];
 	printf("%s\n", filename);
@@ -92,4 +96,5 @@ void cat_n(int argc, char* argv[]){
 		}
 		printf("\n");	
 	}	
+	return 1;
 }

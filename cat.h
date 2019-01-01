@@ -5,6 +5,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
  
-extern void cat(char *path);
+extern int cat(char *path);
 extern int nblines(FILE *f);
-extern void cat_n(int argc, char* argv[]);
+extern int cat_n(int argc, char* argv[]);

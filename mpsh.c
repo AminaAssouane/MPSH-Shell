@@ -815,7 +815,7 @@ int proc(){
 				d++;
 			}
 		}else if (strcmp(command[0], "exit") == 0 && d==0){
-			r=exit(0);
+			exit(0);
 			d++;
 		}else if(strcmp(command[0], "pwd") == 0 && d==0){
 			r=pwd();
