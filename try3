@@ -1,7 +1,7 @@
 
 # INVITE #
 ######################################
-INVITE='acd default ~$'
+INVITE='acd default-$H-$P-$U ~$'
 
 # $H : hostname
 # $P : pathname
@@ -11,4 +11,5 @@ INVITE='acd default ~$'
 # ALIASES #
 ######################################
 alias mkdir = "mkdir -p"
+
 

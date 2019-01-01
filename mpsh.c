@@ -67,8 +67,8 @@ void make_prompt(char * pathCons){
 	dest[len-4] = '\0';
 	//dest[len-1] = '\0';
 	
-	//printf("dest: %s ",dest);
-	char *tmp =malloc(sizeof(char)*1024);
+	printf("dest: %s ",dest);
+	char *tmp =malloc(sizeof(char)*512);
 	for(int i=0;i<len-2;i++){
 		if(dest[i]=='$'){ //des options de INVITE
 			if(dest[i+1]=='H'){
@@ -91,9 +91,12 @@ void make_prompt(char * pathCons){
 			tmp[strlen(tmp)] = dest[i];
 		}
 	}	
-	//printf("tmp :%s\n", tmp);
-	tmp[strlen(tmp)] = '\0';
-	tmp[strlen(tmp)-1] = '\0';
+	//tmp[strlen(tmp)] = '\0';
+	if(tmp[strlen(tmp)-1] == '\n'){
+		tmp[strlen(tmp)-1] = '\0';
+	}
+	
+	printf("tmp :%s\n", tmp);
 	dest = tmp;
 	if(dest != NULL){
 		printf("%s",dest);
@@ -669,12 +672,19 @@ int proc(){
 	char ** ali = malloc(SIZE*sizeof(char*));
 	if(ali==NULL){
 		printf("ali est dans le proc nulli avant while");
-	}	
+	}
+
+
+	char path[SHELL_BUFFER];
+	memset(path, 0, sizeof(path));
+	getcwd(path, sizeof(path));
+	strcat(path,"/mpshrc");
+	printf("path : %s\n", path);
 
 	while(TRUE){
 		int d=0;
-		make_prompt();
-		command = read_input(readline("~s "));
+		make_prompt(path);
+		command = read_input(readline(" "));
 		nbarg=nbargs(command);
 
 		for (int cmp=0;cmp<nbarg;cmp++){
