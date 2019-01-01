@@ -14,6 +14,7 @@
 #include "cat.h"
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <readline/readline.h>
 #include <stdio.h>
@@ -25,6 +26,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "fonctionls.h"
+
 
 #define TRUE 1
 #define SHELL_BUFFER  64

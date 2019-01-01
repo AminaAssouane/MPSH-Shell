@@ -33,6 +33,22 @@ char **read_input(char *input){
 	return cmd;
 }
 
+void make_prompt1(){
+	char pathname[SHELL_BUFFER];
+	char username[SHELL_BUFFER];
+	char hostname[SHELL_BUFFER];
+
+	struct passwd * pwd = getpwuid(getuid());
+	strcpy(username, pwd->pw_name);
+	gethostname(hostname,SHELL_BUFFER);
+	
+
+	memset(pathname, 0, sizeof(pathname));
+	getcwd(pathname, sizeof(pathname));		//obtenir l'adresse actuel
+	printf("[%s-%s-%s]",username,hostname,pathname);
+	fflush(stdout);					//renouvoler espace
+}
+
 void make_prompt(){
 	char pathname[SHELL_BUFFER];
 	char username[SHELL_BUFFER];
@@ -41,13 +57,70 @@ void make_prompt(){
 	struct passwd * pwd = getpwuid(getuid());
 	strcpy(username, pwd->pw_name);
 	gethostname(hostname,SHELL_BUFFER);
-
-
 	memset(pathname, 0, sizeof(pathname));
 	getcwd(pathname, sizeof(pathname));		//obtenir l'adresse actuel
-	printf("[%s-%s-%s]",username,hostname,pathname);
-	fflush(stdout);					//renouvoler espace
+
+
+	char res[1024];
+	char *dest = malloc(sizeof(char)*1024);
+	char filename[] = "mpshrc";
+	FILE *fp;
+	if((fp=fopen(filename,"r"))==NULL){
+		printf("Erreur : make_prompt openfile! \n");
+	}
+	while(!feof(fp)){
+		fgets(res,1024,fp);
+		//printf("%s\n", res);
+		if(strncmp(res,"INVITE='",8)==0){
+			//printf("duitou\n");
+			strcat(dest,res+8);
+			break;
+		}
+	}
+
+	int len = strlen(dest);
+	dest[len-2] = '\0';
+	//dest[len-1] = '\0';
+	//printf("dest len: %d ",len);
+	char tmp[1024];
+	//int lent=0;
+	for(int i=0;i<len-2;i++){
+		if(dest[i]=='$'){ //des options de INVITE
+			if(dest[i+1]=='H'){
+				strcat(tmp,hostname);
+				i++;
+				
+			}else if(dest[i+1] == 'P'){
+				strcat(tmp,pathname);
+				i++;
+			
+			}else if(dest[i+1] == 'U'){
+				strcat(tmp,username);
+				i++;
+			}else{
+				tmp[strlen(tmp)] = dest[i];
+
+			}
+			
+		}else{
+			//printf("%c \n",dest[i]);
+			tmp[strlen(tmp)] = dest[i];
+		}
+	}	
+	//printf("%s\n", tmp);
+	tmp[strlen(tmp)] = '\0';
+	dest = tmp+4;
+	if(dest != NULL){
+		printf("%s",dest);
+		fflush(stdout);					//renouvoler espace
+	}else{
+		printf("[%s-%s-%s]~$",username,hostname,pathname);
+		
+		fflush(stdout);					//renouvoler espace
+	}
+
 }
+
 
 int nbargs(char ** x){
 	int i=0;
@@ -572,7 +645,7 @@ void proc(){
 	while(TRUE){
 		int d=0;
 		make_prompt();
-		command = read_input(readline("~s "));
+		command = read_input(readline(" "));
 		nbarg=nbargs(command);
 
 		for (int cmp=0;cmp<nbarg;cmp++){
