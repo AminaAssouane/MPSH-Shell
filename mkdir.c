@@ -1,6 +1,35 @@
 #include "mkdir.h"
 
+<<<<<<< Updated upstream
 int make_Dir(char* path){
+=======
+int mkdirs(char *muldir)
+{
+    int i,len;
+    char str[512];
+    strncpy(str, muldir, 512);
+    len=strlen(str);
+    for( i=0; i<len; i++ )
+    {
+        if( str[i]=='/' )
+        {
+            str[i] = '\0';
+            if( access(str,0)!=0 )
+            {
+                make_Dir(str);
+            }
+            str[i]='/';
+        }
+    }
+    if( len>0 && access(str,0)!=0 )
+    {
+        make_Dir(str);
+    }
+    return 1;
+}
+
+int make_Dir(const char* path){
+>>>>>>> Stashed changes
     int bgPath;
     int endPath;
     //int fullPathLen;

@@ -296,13 +296,15 @@ void aliasA(char ** e,int nbexp){
 	int i;
 	printf("%d\n",nbexp );
 	for (i=0;i<nbexp;i++){
-			printf("alias ");
-			printf("%s\n",e[i]);
+		printf("alias ");
+		printf("%s\n",e[i]);
 	}
+
 }
 
 int unalias(char** ali, int nbali,char* cmd){
 	int len=strlen(cmd);
+
 	for(int j=0;j<nbali;j++){
 		if(strncmp(ali[j],cmd,len)==0){
 			for (int i=j;i<nbali-1;i++){
@@ -495,6 +497,7 @@ void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char
 			parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 		}
 	}
+
 
 void addCurrentPathToRc(){
 
@@ -858,6 +861,12 @@ void proc(){
 					printf("plusiers dirs");
 					make_Dir(command[2]);
 					//make_plu_Dirs(command[2]);
+/*
+				}else if(nbarg == 3){
+					if(command[1] == "-p"){
+						mkdirs(command[2]);
+					}
+*/
 				}
 			}
 			exit(1);
