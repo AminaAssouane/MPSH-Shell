@@ -95,10 +95,7 @@ void make_prompt(char * pathCons){
 	while(!feof(fp)){
 		fgets(res,1024,fp);
 		if(strncmp(res,"INVITE='",8)==0){
-			//printf("res : %s",res);
-			//printf("len res%d \n",strlen(res));
 			memmove(dest,res+8,strlen(res)-8);
-			//printf("NO 11 dest : %s\n", dest);
 			break;
 		}
 	}
@@ -106,9 +103,7 @@ void make_prompt(char * pathCons){
 	int len = strlen(dest);
 	dest[len-1] = '\0';
 	dest[len-4] = '\0';
-	//dest[len-1] = '\0';
 	
-	//printf("dest: %s ",dest);
 	char *tmp =malloc(sizeof(char)*512);
 	for(int i=0;i<len-2;i++){
 		if(dest[i]=='$'){ //des options de INVITE
@@ -132,7 +127,7 @@ void make_prompt(char * pathCons){
 			tmp[strlen(tmp)] = dest[i];
 		}
 	}	
-	//tmp[strlen(tmp)] = '\0';
+	
 	if(tmp[strlen(tmp)-1] == '\n'){
 		tmp[strlen(tmp)-1] = '\0';
 	}
@@ -141,8 +136,6 @@ void make_prompt(char * pathCons){
 		tmp[strlen(tmp)-2] = 0;
 	}
 	
-	
-	printf("tmp :%s\n", tmp);
 	dest = tmp;
 	if(dest != NULL){
 		printf("%s",dest);
@@ -445,8 +438,6 @@ int erreur(char * err)
     write(2, err, strlen(err));
     return 1;
 }
-
-
 void parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char **exp,int nbexp,char** eg,int nbeg,char **ali,int nbali){
 	char * res=malloc(SIZE*sizeof(char));
 	int nbarg=nbargs(command);
@@ -697,50 +688,38 @@ int redirectionE(char *dir,char ** command,char ** h,int nbcom,pid_t child_pid,i
 }
 
 int proc_command_extern(char ** command, int nbarg, pid_t child_pid, int stat_loc, int r, int d){
-	
-	/*
-	child_pid = fork();
 
-	if(child_pid <0){
-		perror("Fork failed");
-		return -1;
-	}
-	*/
-	//if(child_pid == 1){
-		if(strcmp(command[0], "ls")==0 && d==0){
-			d++;
-			r=fonctionls_main(nbarg,command);
-			return 1;			
-		}else if(strcmp(command[0],"cat")==0 && d==0){
-			d++;
-			if(nbarg>2){
-				r=cat_n(nbarg,command);
-				return 1;
-			}else{
-				r=cat(command[1]);
-				return 1;
-			}
-		}else if (strcmp(command[0],"mkdir")==0 && d==0){
-			d++;
-			if(nbarg == 2){
-				r=make_Dir(command[1]);
-				return 1;
-			}else if(nbarg == 3 && strcmp(command[1],"-p")==0){
-				printf("plusiers dirs");
-				r=make_Dir(command[2]);
-				//make_plu_Dirs(command[2]);
-				return 1;
-			}
+	if(strcmp(command[0], "ls")==0 && d==0){
+		d++;
+		r=fonctionls_main(nbarg,command);
+		return 1;			
+	}else if(strcmp(command[0],"cat")==0 && d==0){
+		d++;
+		if(nbarg>2){
+			r=cat_n(nbarg,command);
+			return 1;
+		}else{
+			r=cat(command[1]);
+			return 1;
 		}
-		return -1;
-	//}else{
-	//	printf("fuck \n");
-		//waitpid(child_pid, &stat_loc, WUNTRACED);
-	//}
-
-	//return -1;
+	}else if (strcmp(command[0],"mkdir")==0 && d==0){
+		d++;
+		if(nbarg == 2){
+			r=make_Dir(command[1]);
+			return 1;
+		}else if(nbarg == 3 && strcmp(command[1],"-p")==0){
+			printf("plusiers dirs");
+			r=make_Dir(command[2]);
+			//make_plu_Dirs(command[2]);
+			return 1;
+		}
+	}
+	return -1;
 }
 
+int export(){
+	
+}
 
 int proc(){
 	int nbcom=0;
@@ -808,7 +787,6 @@ int proc(){
 		command = read_input(cmd);
 		nbarg=nbargs(command);
 		
-
 		for (int cmp=0;cmp<nbarg;cmp++){
 			if (command[cmp][0]=='~'){
 				char * s=malloc(SIZE*sizeof(char));
@@ -1004,10 +982,14 @@ int proc(){
 			d++;
 		}else if(strcmp(command[0],"export")==0 && d==0){
 			d++;
-			if(nbarg!=2){
+			if(nbarg > 2){
 				printf("Mauvais nombre d'argument\n");
+			}else if(nbarg == 1){
+				//fair quelques chose
 			}else if (strcmp(command[1],"-n")==0){
 				r=exportN(exp,nbexp);
+			}else if (strncmp(command[1], "CHEMIN=", 7) == 0){
+				printf("ainyou \n");
 			}else{
 				int i = ajoutExp(command[1],exp,nbexp);
 				if(i>=0){
