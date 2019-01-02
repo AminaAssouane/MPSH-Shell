@@ -29,8 +29,49 @@ char **read_input(char *input){
 		tmp = strtok(NULL, sep); //ici, NULL c'est le premier variable
 	}
 
-	cmd[index] = NULL;  //la fonction execvp demand le dernier character est NULL
+	cmd[index] = NULL;  //le dernier character est NUL
 	return cmd;
+}
+
+/* la fonction is_pipe_ou_et_exits sert à vérifier si pipe | ou & exist 
+ * lorsque pipe exits, il retourne 2, si & exists, il retourne 3
+ * morsque | et & n'exist pas, retourne -1
+ */
+short is_pipe_ou_et_exist(char * input){
+
+	int len = strlen(input);
+	for(int i=0;i<len;i++){
+		if(input[i] == '|'){
+			return 2;
+		}
+		if(input[i] == '&'){
+			return 3;
+		}
+	}
+
+	return -1;
+}
+
+//sep pour choisir le charactere à séparer la commande
+char** read_command_pipe_ou_et(char * input,char * sep){
+	
+	char ** cmds = malloc(SHELL_BUFFER*sizeof(char *));
+	if(cmds == NULL){
+		perror("read_commands_pipe : malloc failed ");
+		exit(1);
+	}
+
+	char * tmp;
+	int index = 0;
+	tmp = strtok(input, sep);
+	while(tmp != NULL){
+		cmds[index] = tmp;
+		index++;
+		tmp = strtok(NULL,sep);
+	}
+
+	cmds[index] = NULL;
+	return  cmds;
 }
 
 void make_prompt(char * pathCons){
@@ -67,7 +108,7 @@ void make_prompt(char * pathCons){
 	dest[len-4] = '\0';
 	//dest[len-1] = '\0';
 	
-	printf("dest: %s ",dest);
+	//printf("dest: %s ",dest);
 	char *tmp =malloc(sizeof(char)*512);
 	for(int i=0;i<len-2;i++){
 		if(dest[i]=='$'){ //des options de INVITE
@@ -95,6 +136,11 @@ void make_prompt(char * pathCons){
 	if(tmp[strlen(tmp)-1] == '\n'){
 		tmp[strlen(tmp)-1] = '\0';
 	}
+	
+	if(tmp[strlen(tmp)-2] != 0){
+		tmp[strlen(tmp)-2] = 0;
+	}
+	
 	
 	printf("tmp :%s\n", tmp);
 	dest = tmp;
@@ -650,6 +696,52 @@ int redirectionE(char *dir,char ** command,char ** h,int nbcom,pid_t child_pid,i
     return 1;
 }
 
+int proc_command_extern(char ** command, int nbarg, pid_t child_pid, int stat_loc, int r, int d){
+	
+	/*
+	child_pid = fork();
+
+	if(child_pid <0){
+		perror("Fork failed");
+		return -1;
+	}
+	*/
+	//if(child_pid == 1){
+		if(strcmp(command[0], "ls")==0 && d==0){
+			d++;
+			r=fonctionls_main(nbarg,command);
+			return 1;			
+		}else if(strcmp(command[0],"cat")==0 && d==0){
+			d++;
+			if(nbarg>2){
+				r=cat_n(nbarg,command);
+				return 1;
+			}else{
+				r=cat(command[1]);
+				return 1;
+			}
+		}else if (strcmp(command[0],"mkdir")==0 && d==0){
+			d++;
+			if(nbarg == 2){
+				r=make_Dir(command[1]);
+				return 1;
+			}else if(nbarg == 3 && strcmp(command[1],"-p")==0){
+				printf("plusiers dirs");
+				r=make_Dir(command[2]);
+				//make_plu_Dirs(command[2]);
+				return 1;
+			}
+		}
+		return -1;
+	//}else{
+	//	printf("fuck \n");
+		//waitpid(child_pid, &stat_loc, WUNTRACED);
+	//}
+
+	//return -1;
+}
+
+
 int proc(){
 	int nbcom=0;
 	char ** h= malloc(SIZE*sizeof(char*));
@@ -674,18 +766,48 @@ int proc(){
 		printf("ali est dans le proc nulli avant while");
 	}
 
-
+	/*le boucle suitvant donne l'adresse de chemin actuel
+	 */
 	char path[SHELL_BUFFER];
 	memset(path, 0, sizeof(path));
 	getcwd(path, sizeof(path));
 	strcat(path,"/mpshrc");
-	printf("path : %s\n", path);
 
 	while(TRUE){
 		int d=0;
 		make_prompt(path);
-		command = read_input(readline(" "));
+
+		char * cmd = readline(" ");		//cmd est input de string
+		
+		if(is_pipe_ou_et_exist(cmd) == 2){	//pour le pipe : '|'
+			char** cmd_pipe = read_command_pipe_ou_et(cmd,"|");
+			nbarg = nbargs(cmd_pipe);
+			for(int i=0;i<nbarg;i++){
+				//if(proc_pipe_et_ou(cmd_pipe[i])>=0){
+				//	continue;
+				//}
+				printf("pour | \n");
+			}
+
+			continue;
+		}else if(is_pipe_ou_et_exist(cmd) == 3){	//pour le et : '&'
+			char** cmd_et = read_command_pipe_ou_et(cmd,"&");	
+			nbarg = nbargs(cmd_et);
+
+			for(int i=0;i<nbarg;i++){
+				//printf("xxx &&&&\n");
+				char ** cmd_x = read_input(cmd_et[i]);
+				int nbarg_x = nbargs(cmd_x);
+				parse(cmd_x,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
+				proc_command_extern(cmd_x,nbarg_x,child_pid,stat_loc,r,d);
+			}
+
+			continue;
+		}
+			
+		command = read_input(cmd);
 		nbarg=nbargs(command);
+		
 
 		for (int cmp=0;cmp<nbarg;cmp++){
 			if (command[cmp][0]=='~'){
@@ -940,7 +1062,6 @@ int proc(){
 				}
 			}
 			exit(1);
-			printf("main : execvp failed \n");
 		}else{
 			waitpid(child_pid, &stat_loc, WUNTRACED);
 		}
