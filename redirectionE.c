@@ -10,8 +10,8 @@ int redirectionE(char *dir,char ** command,char ** h,int nbcom,pid_t child_pid,i
       	        erreur("Mpsh : try : no such file or directory \n");
     	    }
             
-            // On redirige 1 vers file
-            dup2(file,0); 
+  
+            dup2(0,file); 
     	    close(file);
 
          // La redirection d'entrée "<" marche comme les commandes elle même, elle ne fait qu'afficher ce que les commandes renvoie dans la sortie standard
