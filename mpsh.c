@@ -92,19 +92,23 @@ void make_prompt(char * pathCons){
 	if((fp=fopen(filename,"r"))==NULL){
 		printf("Erreur : make_prompt openfile! \n");
 	}
+	int z=1;
 	while(!feof(fp)){
 		fgets(res,1024,fp);
 		if(strncmp(res,"INVITE='",8)==0){
+			z=0;			
 			memmove(dest,res+8,strlen(res)-8);
 			break;
 		}
 	}
 
+	fclose(fp);
+
 	int len = strlen(dest);
 	dest[len-1] = '\0';
 	dest[len-4] = '\0';
 	
-	char *tmp =malloc(sizeof(char)*512);
+	char tmp[512] =" ";
 	for(int i=0;i<len-2;i++){
 		if(dest[i]=='$'){ //des options de INVITE
 			if(dest[i+1]=='H'){
@@ -137,7 +141,7 @@ void make_prompt(char * pathCons){
 	}
 	
 	dest = tmp;
-	if(dest != NULL){
+	if(z==0){
 		printf("%s",dest);
 		fflush(stdout);				//renouvoler espace
 	}else{
@@ -145,6 +149,49 @@ void make_prompt(char * pathCons){
 		
 		fflush(stdout);					//renouvoler espace
 	}
+}
+
+int make_chemin(char * path){
+	char chemin[SHELL_BUFFER];
+	memset(chemin, 0, sizeof(chemin));
+	getcwd(chemin, sizeof(chemin));
+	
+	//printf("chemin : %s \n", chemin);
+	//printf("path %s \n",path);
+	FILE *fp;
+	char * tmp = malloc(sizeof(char)*512);
+	if((fp=fopen(path,"r"))==NULL){
+		printf("Erreur : make_prompt openfile! \n");
+	}
+	short h=1;
+	while(!feof(fp)){
+		fgets(tmp,1024,fp);
+		if(strncmp(tmp,"export CHEMIN=",14)==0){
+			h=0;	
+			break;
+		}
+	}
+	free(tmp);
+	fclose(fp);
+	if(h!=0){
+		fp=fopen(path,"a+");
+		if(fp==NULL){
+			printf("erreur make_chemin mpshrc\n");
+		}
+		char ch[128] = "export CHEMIN=";
+		//printf("chhh %s\n", ch);
+		strcat(ch,chemin);
+		//printf("ch %s\n", ch);
+		fseek(fp,0,SEEK_END);
+		//fputs(ch,fp);
+		fwrite(ch,strlen(ch),1,fp);
+		fclose(fp);
+	}
+
+	//free(tmp);
+	//fclose(fp);
+
+	return 1;
 }
 
 int nbargs(char ** x){
@@ -257,7 +304,6 @@ int history(int argc,char ** argv,char *h [],int nbcom){
 					printf("%s\n",h[nbcom-i]);
 				return 1;
 			}
-			
 		}else{
 			printf("Mauvais argument\n");
 			return -1;
@@ -718,7 +764,7 @@ int proc_command_extern(char ** command, int nbarg, pid_t child_pid, int stat_lo
 }
 
 int export(){
-	
+	return 1;	
 }
 
 int proc(){
@@ -751,6 +797,8 @@ int proc(){
 	memset(path, 0, sizeof(path));
 	getcwd(path, sizeof(path));
 	strcat(path,"/mpshrc");
+
+	make_chemin(path);
 
 	while(TRUE){
 		int d=0;
@@ -986,6 +1034,7 @@ int proc(){
 				printf("Mauvais nombre d'argument\n");
 			}else if(nbarg == 1){
 				//fair quelques chose
+				printf("liere le fin du fichier mpshrc\n");
 			}else if (strcmp(command[1],"-n")==0){
 				r=exportN(exp,nbexp);
 			}else if (strncmp(command[1], "CHEMIN=", 7) == 0){

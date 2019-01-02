@@ -1,6 +1,7 @@
 
 # INVITE #
 ######################################
+
 INVITE='acdyyyyyyyy $P ~$'
 
 # $H : hostname
@@ -10,5 +11,7 @@ INVITE='acdyyyyyyyy $P ~$'
 
 # ALIASES #
 ######################################
+
 alias mkdir = "mkdir -p"
 
+export CHEMIN=/home/yuchen/Documents/L3_INFO_SYS/mpsh
