@@ -507,7 +507,7 @@ int dollar(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char
 	return r;
 }
 int parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char **exp,int nbexp,char** eg,int nbeg,char **ali,int nbali){
-	int r;
+	int r=-1;
 	char * res=malloc(SIZE*sizeof(char));
 	int nbarg=nbargs(command);
 	int d=0;
@@ -865,14 +865,25 @@ int proc(){
 
 		char * cmd = readline(" ");		//cmd est input de string
 		
+		int vf=0;
 		if(is_pipe_ou_et_exist(cmd) == 2){	//pour le pipe : '|'
 			char** cmd_pipe = read_command_pipe_ou_et(cmd,"|");
 			nbarg = nbargs(cmd_pipe);
 			for(int i=0;i<nbarg;i++){
-				//if(proc_pipe_et_ou(cmd_pipe[i])>=0){
-				//	continue;
-				//}
-				printf("pour | \n");
+				char ** cmd_x = read_input(cmd_pipe[i]);
+				int nbarg_x = nbargs(cmd_x);
+				int tmp =0;
+				int tmp2 = 0;
+				if((tmp = parse(cmd_x,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali)) >=0 || 
+				(tmp2 = proc_command_extern(cmd_x,nbarg_x,child_pid,stat_loc,r,d)) >=0){
+
+					printf("parse commande interne ; %d \n", tmp);
+					printf("parse commande externe ; %d \n", tmp2);
+
+					vf=1;
+					break;
+				}
+
 			}
 
 			continue;
@@ -890,7 +901,11 @@ int proc(){
 
 			continue;
 		}
-			
+		
+		if(vf>0){
+			continue;
+		}
+
 		command = read_input(cmd);
 		nbarg=nbargs(command);
 		
