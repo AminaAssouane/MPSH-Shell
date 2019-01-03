@@ -1,0 +1,20 @@
+ALIAS            Manuel de l'utilisateur MPSH             ALIAS
+
+
+NOM
+       alias - affiche les alias ou crée un nouvel alias
+
+
+SYNOPSIS
+       alias [name=value]
+
+
+DESCRIPTION
+
+       alias affiche les alias si la commande est utilisée sans 
+       argument ou met en place un nouvel alias, qui est un nom
+       substituant une commande et pouvant être appelé en place
+       de cette commande
+
+
+              
