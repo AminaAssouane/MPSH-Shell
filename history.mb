@@ -1,0 +1,23 @@
+HISTORY            Manuel de l'utilisateur MPSH             HISTORY
+
+
+NOM
+       history - Afficher l'historique des commandes.
+
+
+SYNOPSIS
+       history [n]
+
+
+DESCRIPTION
+       history sans argument, affiche la liste numérotée de 
+       l'historique des commandes, sinon elle peut relancer
+       la commande dont le numéro dans la liste est n, ou fixer à n 
+       le nombre de commandes enregistrées dans l'historique.
+
+
+OPTION
+       -n, Si n entier positif : relance la commande dont le numéro
+       dans la liste est n.
+       Si n entier négatif : fixe à n le nombre de commandes 
+       enregistrées dans l'historique
