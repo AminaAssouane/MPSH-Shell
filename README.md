@@ -53,4 +53,4 @@ Marchent toutes parfaitement, excépté un problème du caractère "~" dans les 
 
 Complétions automatiques
 ------------------------------------
-Marche parfaitement.
+Marche parfaitement sur les fichiers et répertoires, mais ne fonctionne pas sur les commandes.
