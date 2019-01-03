@@ -1,0 +1,15 @@
+EXPORT               Manuel de l'utilisateur MPSH                EXPORT
+
+
+NOM
+       export - Exporter une variable.
+
+
+SYNOPSIS
+       export var[=word]
+
+
+DESCRIPTION
+
+       export exporte la variable "var" ( i.e. la transforme en variable 
+       d'environnement).
