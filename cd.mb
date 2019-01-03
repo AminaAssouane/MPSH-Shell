@@ -1,0 +1,14 @@
+CD            Manuel de l'utilisateur MPSH             CD
+
+
+NOM
+       cd - change le répertoire courant
+
+
+SYNOPSIS
+       cd [dir]
+
+
+DESCRIPTION
+
+       cd change le répertoire courant à "dir".
