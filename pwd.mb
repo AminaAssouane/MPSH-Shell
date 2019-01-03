@@ -10,5 +10,4 @@ SYNOPSIS
 
 
 DESCRIPTION
-       pwd affiche le nom complet du répertoire en cours.
-
+       pwd affiche la référence absolue du répertoire courant.
