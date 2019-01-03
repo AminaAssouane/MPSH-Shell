@@ -1,0 +1,16 @@
+LS               Manuel de l'utilisateur MPSH                 LS
+
+
+NOM
+       ls - Liste le contenu d'un repertoire.
+
+
+SYNOPSIS
+       ls [ref]
+
+
+DESCRIPTION
+
+       ls liste le contenu d'un répertoire (le répertoire courant
+       en l'absence d'arguments)
+
