@@ -36,7 +36,7 @@ Toutes les commandes sont éxecutables et marchent parfaitement, + ajout de l'op
 
 Variables
 ------------------------------------
-? : éxecutable du shell.
+? : éxecutable à partir du shell.
 INVITE : créé et initialisable dans mpshrc
 CHEMIN : créé dans mpshrc mais non utilisé/non utilisable
 
@@ -54,4 +54,3 @@ Marchent toutes parfaitement, excépté un problème du caractère "~" dans les 
 Complétions automatiques
 ------------------------------------
 Marche parfaitement.
-
