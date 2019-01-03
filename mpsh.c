@@ -109,7 +109,7 @@ void make_prompt(char * pathCons){
 	dest[len-1] = '\0';
 	dest[len-4] = '\0';
 	
-	char tmp[512] =" ";
+	char tmp[512] ="";
 	for(int i=0;i<len-2;i++){
 		if(dest[i]=='$'){ //des options de INVITE
 			if(dest[i+1] == 'P'){
@@ -153,8 +153,6 @@ int make_chemin(char * path){
 	memset(chemin, 0, sizeof(chemin));
 	getcwd(chemin, sizeof(chemin));
 	
-	//printf("chemin : %s \n", chemin);
-	//printf("path %s \n",path);
 	FILE *fp;
 	char * tmp = malloc(sizeof(char)*512);
 	if((fp=fopen(path,"r"))==NULL){
@@ -182,9 +180,6 @@ int make_chemin(char * path){
 		fwrite(ch,strlen(ch),1,fp);
 		fclose(fp);
 	}
-
-	//free(tmp);
-	//fclose(fp);
 	return 1;
 }
 
@@ -196,9 +191,8 @@ void accesible(){
 	char str[] = "PATH=$PATH:";
 	strcat(str,chemin);
 
-	printf("str : %s \n", str);
 	if(execlp("export","export",str,NULL) == -1){
-		printf("failed \n");
+		//printf("failed\n");
 	}
 }
 
@@ -867,7 +861,7 @@ int proc(){
 	strcat(path,"/mpshrc");
 
 	make_chemin(path);
-	//accesible();
+	accesible();
 
 	while(TRUE){
 		int d=0;
@@ -1162,7 +1156,6 @@ int proc(){
 				}else if(nbarg == 3 && strcmp(command[1],"-p")==0){
 					printf("plusiers dirs");
 					r=make_Dir(command[2]);
-					//make_plu_Dirs(command[2]);
 				}
 			}
 			exit(1);
