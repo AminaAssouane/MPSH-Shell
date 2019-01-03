@@ -801,26 +801,26 @@ int proc_command_extern(char ** command, int nbarg, pid_t child_pid, int stat_lo
 	if(strcmp(command[0], "ls")==0 && d==0){
 		d++;
 		r=fonctionls_main(nbarg,command);
-		return 1;			
+		return r;			
 	}else if(strcmp(command[0],"cat")==0 && d==0){
 		d++;
 		if(nbarg>2){
 			r=cat_n(nbarg,command);
-			return 1;
+			return r;
 		}else{
 			r=cat(command[1]);
-			return 1;
+			return r;
 		}
 	}else if (strcmp(command[0],"mkdir")==0 && d==0){
 		d++;
 		if(nbarg == 2){
 			r=make_Dir(command[1]);
-			return 1;
+			return r;
 		}else if(nbarg == 3 && strcmp(command[1],"-p")==0){
 			printf("plusiers dirs");
 			r=make_Dir(command[2]);
 			//make_plu_Dirs(command[2]);
-			return 1;
+			return r;
 		}
 	}
 	return -1;

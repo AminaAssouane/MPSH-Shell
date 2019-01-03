@@ -14,20 +14,17 @@ int cat(char *path){
       }
       if (r < 0){
 	printf("Erreur.");
-	exit(-1);
 	return-1;
       }
       close(fd);
     }
     else{
-      printf("Le fichier n'existe pas.");
-      exit(-1);
+      printf("Le fichier n'existe pas.\n");
       return -1;
     }
   }
   else {
-    printf("Erreur. Le chemin que vous avez mentionne n'est pas un fichier.");
-    exit(-1);
+    printf("Erreur. Le chemin que vous avez mentionne n'est pas un fichier.\n");
     return -1;
   }
   printf("\n");
