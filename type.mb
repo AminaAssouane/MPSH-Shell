@@ -1,0 +1,17 @@
+TYPE               Manuel de l'utilisateur MPSH                TYPE
+
+
+NOM
+       type - Affiche des informations sur le type de la commande.
+
+
+SYNOPSIS
+       type name [name ...]
+
+
+DESCRIPTION
+
+       type indique comment chaque nom est interprété (comme alias, 
+       commande interne ou commande externe) s'il est utilisé pour 
+       lancer une commande.
+
