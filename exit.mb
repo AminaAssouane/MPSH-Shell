@@ -1,0 +1,16 @@
+EXIT            Manuel de l'utilisateur MPSH             EXIT
+
+
+NOM
+       exit - quitter le shell
+
+
+SYNOPSIS
+       exit [n]
+
+
+DESCRIPTION
+
+       exit permet de sortir du shell avec la valeur de retour 
+       n si n est spécifié, la valeur de retour de la dernière 
+       commande lancée sinon.
