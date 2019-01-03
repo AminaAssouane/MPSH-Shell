@@ -1128,7 +1128,13 @@ int proc(){
 			command=read_input(tmp);
 			parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 		}
-
+		
+		/*
+		char cheminx[SHELL_BUFFER];
+		memset(cheminx, 0, sizeof(cheminx));
+		getcwd(cheminx, sizeof(cheminx));
+		strcat(cheminx, "/ls");
+		*/
 		child_pid = fork();
 
 		if(child_pid <0){
@@ -1139,6 +1145,8 @@ int proc(){
 		if(child_pid == 0){
 			if(strcmp(command[0], "ls")==0 && d==0){
 				d++;
+				//command[nbarg+1] = 0;;
+				//execvp("ls",command);
 				r=fonctionls_main(nbarg,command);				
 			}else if(strcmp(command[0],"cat")==0 && d==0){
 				d++;
