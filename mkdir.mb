@@ -1,0 +1,18 @@
+MKDIR              Manuel de l'utilisateur MPSH              MKDIR
+
+
+NOM
+       mkdir - Créer un nouveau répertoire.
+
+
+SYNOPSIS
+       mkdir [OPTION] ref
+
+
+DESCRIPTION
+       mkdir  crée un nouveau répertoire correspondant au nom
+       mentionné par "ref".
+
+
+OPTION
+       -p, Créer   les   répertoires  parents  manquants.
