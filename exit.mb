@@ -14,3 +14,6 @@ DESCRIPTION
        exit permet de sortir du shell avec la valeur de retour 
        n si n est spécifié, la valeur de retour de la dernière 
        commande lancée sinon.
+
+OPTION
+       -n, renvoie la valeur n.
