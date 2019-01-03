@@ -11,7 +11,7 @@ int main(){
 	struct passwd * pwd = getpwuid(getuid());
 	strcpy(username, pwd->pw_name);
 
-	const char * bash_name = "/.bash_profile";
+	const char * bash_name = "/.bashrc";
 	strcat(filename,username);
 	strcat(filename,bash_name);
 

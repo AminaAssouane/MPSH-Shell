@@ -78,11 +78,11 @@ char** read_command_pipe_ou_et(char * input,char * sep){
 void make_prompt(char * pathCons){
 	char pathname[SHELL_BUFFER];
 	char username[SHELL_BUFFER];
-	char hostname[SHELL_BUFFER];
+	//char hostname[SHELL_BUFFER];
 
 	struct passwd * pwd = getpwuid(getuid());
 	strcpy(username, pwd->pw_name);
-	gethostname(hostname,SHELL_BUFFER);
+	//gethostname(hostname,SHELL_BUFFER);
 	memset(pathname, 0, sizeof(pathname));
 	getcwd(pathname, sizeof(pathname));		//obtenir l'adresse actuel
 
@@ -112,11 +112,7 @@ void make_prompt(char * pathCons){
 	char tmp[512] =" ";
 	for(int i=0;i<len-2;i++){
 		if(dest[i]=='$'){ //des options de INVITE
-			if(dest[i+1]=='H'){
-				strcat(tmp,hostname);
-				i++;
-				
-			}else if(dest[i+1] == 'P'){
+			if(dest[i+1] == 'P'){
 				strcat(tmp,pathname);
 				i++;
 			
@@ -146,7 +142,7 @@ void make_prompt(char * pathCons){
 		printf("%s",dest);
 		fflush(stdout);				//renouvoler espace
 	}else{
-		printf("[%s-%s-%s]~$",username,hostname,pathname);
+		printf("[%s-%s]~$",username,pathname);
 		
 		fflush(stdout);					//renouvoler espace
 	}
@@ -174,25 +170,36 @@ int make_chemin(char * path){
 	}
 	free(tmp);
 	fclose(fp);
+
 	if(h!=0){
 		fp=fopen(path,"a+");
 		if(fp==NULL){
 			printf("erreur make_chemin mpshrc\n");
 		}
 		char ch[128] = "export CHEMIN=";
-		//printf("chhh %s\n", ch);
 		strcat(ch,chemin);
-		//printf("ch %s\n", ch);
 		fseek(fp,0,SEEK_END);
-		//fputs(ch,fp);
 		fwrite(ch,strlen(ch),1,fp);
 		fclose(fp);
 	}
 
 	//free(tmp);
 	//fclose(fp);
-
 	return 1;
+}
+
+void accesible(){
+	char chemin[SHELL_BUFFER];
+	memset(chemin, 0, sizeof(chemin));
+	getcwd(chemin, sizeof(chemin));
+
+	char str[] = "PATH=$PATH:";
+	strcat(str,chemin);
+
+	printf("str : %s \n", str);
+	if(execlp("export","export",str,NULL) == -1){
+		printf("failed \n");
+	}
 }
 
 int nbargs(char ** x){
@@ -860,6 +867,7 @@ int proc(){
 	strcat(path,"/mpshrc");
 
 	make_chemin(path);
+	//accesible();
 
 	while(TRUE){
 		int d=0;
@@ -1128,13 +1136,7 @@ int proc(){
 			command=read_input(tmp);
 			parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
 		}
-		
-		/*
-		char cheminx[SHELL_BUFFER];
-		memset(cheminx, 0, sizeof(cheminx));
-		getcwd(cheminx, sizeof(cheminx));
-		strcat(cheminx, "/ls");
-		*/
+
 		child_pid = fork();
 
 		if(child_pid <0){
@@ -1145,8 +1147,6 @@ int proc(){
 		if(child_pid == 0){
 			if(strcmp(command[0], "ls")==0 && d==0){
 				d++;
-				//command[nbarg+1] = 0;;
-				//execvp("ls",command);
 				r=fonctionls_main(nbarg,command);				
 			}else if(strcmp(command[0],"cat")==0 && d==0){
 				d++;
