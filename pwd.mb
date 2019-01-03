@@ -1,0 +1,14 @@
+PWD               Manuel de l'utilisateur MPSH                PWD
+
+
+NOM
+       pwd - Affiche la référence absolue du répertoire courant
+
+
+SYNOPSIS
+       pwd
+
+
+DESCRIPTION
+       pwd affiche le nom complet du répertoire en cours.
+
