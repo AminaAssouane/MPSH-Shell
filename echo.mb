@@ -1,0 +1,14 @@
+ECHO            Manuel de l'utilisateur MPSH             ECHO
+
+
+NOM
+       echo - affiche une ligne de texte
+
+
+SYNOPSIS
+       echo $var
+
+
+DESCRIPTION
+
+       echo affiche la valeur de la variable "var".
