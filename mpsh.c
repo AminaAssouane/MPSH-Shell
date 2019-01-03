@@ -515,6 +515,7 @@ int parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char 
 			if((r=cd(command[1]))<0){
 				perror(command[1]);
 			}
+			d++;
 		}else if(command[0][0]=='$' && d==0){
 			char * tmp=malloc(SIZE*sizeof(char));
 			char * tmp2=malloc(SIZE*sizeof(char));			
@@ -525,6 +526,7 @@ int parse(char ** command,char ** h,int nbcom,pid_t child_pid,int stat_loc,char 
 				free(command);
 				command=read_input(tmp);
 				r=parse(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
+				d++;
 			}else{
 				tmp=parcoursexp((command[0])+1,eg,nbeg);
 				tmp2=resteDeLaCommande(command,1);
@@ -668,7 +670,7 @@ void addCurrentPathToRc(){
 	
 	char *res = "export PATH=\"";
 	strcat(res,currentPath);
-	char *tail = ":\$PATH";
+	char *tail = ":\\$PATH";
 	strcat(res,tail);
 
 	write(p,res,strlen(res));
@@ -876,10 +878,9 @@ int proc(){
 				int tmp2 = 0;
 				if((tmp = parse(cmd_x,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali)) >=0 || 
 				(tmp2 = proc_command_extern(cmd_x,nbarg_x,child_pid,stat_loc,r,d)) >=0){
-
-					printf("parse commande interne ; %d \n", tmp);
-					printf("parse commande externe ; %d \n", tmp2);
-
+				
+					//printf("parse commande interne ; %d \n", tmp);
+					//printf("parse commande externe ; %d \n", tmp2);
 					vf=1;
 					break;
 				}
@@ -1004,10 +1005,13 @@ int proc(){
 			if(cd(command[1])<0){
 				perror(command[1]);
 			}
+			d++;
 		}else if(strcmp(command[0],"?")==0){
 			printf("%d\n",r);
+			d++;
 		}else if(command[0][0]=='$' && d==0){
 			r=dollar(command,h,nbcom,child_pid,stat_loc,exp,nbexp,eg,nbeg,ali,nbali);
+			d++;
 		}else if (egalecomm(command)==0 && d==0){
 			int i=ajoutExp(command[0],eg,nbeg);
 			if(i>=0){
@@ -1158,7 +1162,7 @@ int proc(){
 			waitpid(child_pid, &stat_loc, WUNTRACED);
 		}
 		if(d==0)
-			erreur("Erreur: commande inconnue\n");
+			//erreur("Erreur: commande inconnue\n");
 		d=0;
 		free(command);
 	}
