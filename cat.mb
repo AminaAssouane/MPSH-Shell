@@ -1,0 +1,21 @@
+
+CAT               Manuel de l'utilisateur MPSH                CAT
+
+
+NOM
+       cat - Afficher les fichiers.
+
+
+SYNOPSIS
+       cat [OPTION] ref
+
+
+DESCRIPTION
+
+       cat  affiche  sur  la sortie standard le contenu de chacun 
+       des fichiers indiqués.
+
+
+OPTION
+       -n, Numéroter les lignes en sortie
+              
