@@ -1,0 +1,14 @@
+UNALIAS           Manuel de l'utilisateur MPSH          UNALIAS
+
+
+NOM
+       unalias - supprime un alias
+
+
+SYNOPSIS
+       unalias name
+
+
+DESCRIPTION
+
+       unalias supprime l'alias défini par le nom "name"
