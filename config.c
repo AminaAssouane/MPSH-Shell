@@ -1,8 +1,6 @@
 #include "mpsh.h"
 
-
 int main(){
-
 	char username[80];
 	char currentPath[80];
 	getcwd(currentPath,sizeof(currentPath));

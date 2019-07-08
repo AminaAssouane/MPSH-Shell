@@ -1,9 +1,9 @@
 /*
- *------------Université Paris Diderot--------------------
+ *------------Paris Diderot University--------------------
  * Filename: mpsh.h
  * Version: 1.0 Beta
  * Created: 16h32m 02/11/18
- * Author: Equipe 33 (Amina ASSOUANE Mickeal Darmon Yuchen BAI )
+ * Author: Equipe 33 (Amina ASSOUANE Mickael DARMON Yuchen BAI )
  *---------------------------------------------------------
  */
 
